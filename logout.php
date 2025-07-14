@@ -8,17 +8,7 @@ session_unset();
 // 3. Destroy the session completely.
 session_destroy();
 
-// 4. Redirect the user back to the login page.
-header("Location: login.php");
-exit();
-?>
-
-
-<?php // logout.php
-session_start();
-session_unset();
-session_destroy();
-// It should redirect to the admin login page
-header("Location: admin_login.php"); 
-exit;
+// 4. Redirect the user back to the homepage.
+header("Location: index.php");
+exit(); // Always exit after a header redirect
 ?>

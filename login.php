@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['identifier'])) {
         $otp = rand(100000, 999999);
 
         $_SESSION['otp_user_data'] = [
+            'id' => $user['id'], // <-- ADD THIS LINE
             'username' => $user['username'],
             'email' => $user['email'],
             'type' => $user['type'],

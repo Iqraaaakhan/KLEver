@@ -28,6 +28,18 @@ $specials_query = "SELECT * FROM menu_items WHERE is_special = 1 AND is_availabl
                     LIMIT 6";
 $specials_result = $conn->query($specials_query);
 ?>
+<?php
+session_start(); // Start the session to access session variables
+
+// Check for a flash message and prepare to display it.
+$flash_message = '';
+if (isset($_SESSION['flash_message'])) {
+    $flash_message = $_SESSION['flash_message'];
+    // Unset the flash message so it only shows once
+    unset($_SESSION['flash_message']);
+}
+?>
+<?php include 'header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,23 +62,11 @@ $specials_result = $conn->query($specials_query);
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+    <!-- The header now sits OUTSIDE the hero-section -->
+    <?php include 'header.php'; ?>
 
- <!-- ... around line 51 ... -->
-
-<!-- The header has been moved INSIDE the hero-section -->
-<section class="hero-section">
-  <header class="main-header">
-    <div class="container">
-      <a href="index.php" class="logo">KLE<span>ver</span></a>
-      <nav>
-        <a href="index.php" class="active">Home</a>
-        <a href="menu.php">Menu</a>
-        <a href="login.php">Login</a>
-        <a href="order.php" class="btn-primary">Order Now</a>
-        <a href="track_order.php">Track Order</a> <!-- ✅ NEW LINK -->
-      </nav>
-    </div>
-  </header>
+    <!-- The hero-section is the first content element -->
+    <section class="hero-section">
 
   <div class="swiper-container hero-slider">
       <div class="swiper-wrapper">
@@ -96,7 +96,13 @@ $specials_result = $conn->query($specials_query);
       <a href="menu.php" class="btn-secondary">Browse Menu →</a>
   </div>
 </section>
-
+<div class="container">
+        <?php if ($flash_message): ?>
+            <div class="flash-message">
+                <?php echo $flash_message; ?>
+            </div>
+        <?php endif; ?>
+    </div>
   <section class="features-section-new">
     <div class="container">
         <div class="feature-item-new">

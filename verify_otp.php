@@ -53,8 +53,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
         // Clean up temporary login data
         unset($_SESSION['otp_user_data']);
 
-        // Redirect to the main menu
-        header("Location: menu.php"); // Or your main dashboard
+        // The new logic for verify_otp.php
+        $_SESSION['flash_message'] = "Welcome back, " . htmlspecialchars($_SESSION['username']) . "!";
+        // Redirect to your main homepage
+        header("Location: index.php");
         exit;
         
     } else {

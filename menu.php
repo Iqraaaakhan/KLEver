@@ -28,6 +28,7 @@ if (isset($_GET['search_query']) && !empty($_GET['search_query'])) {
 $menu_result = $conn->query($menu_query);
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

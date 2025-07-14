@@ -1,4 +1,12 @@
 /* ================================
+   CRITICAL FIX FOR FULL-WIDTH LAYOUT
+================================= */
+html, body {
+    /* This is the key: it prevents horizontal scrollbars and the white gaps. */
+    overflow-x: hidden;
+}
+
+/* ================================
    GLOBAL STYLES & RESET
 ================================= */
 * {
@@ -109,6 +117,7 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow: hidden; /* <-- THIS IS THE CRITICAL FIX FOR THE WHITE BARS */
 }
 
 .hero-slider {
@@ -553,4 +562,74 @@ footer .social a:hover {
   color: #888;
   text-align: center;
   font-style: italic;
+}
+
+/* Style for the success message */
+.flash-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    font-weight: 600;
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    text-align: center;
+}
+
+/* Style for the user initial icon in the header */
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #bfa89e; /* Your theme's color */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Style for the user initial icon that appears when logged in */
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #A93F55; /* A strong accent color, change if you like */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* ================================
+   LOGGED-IN USER ICON
+================================= */
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #AF8260; /* Using your theme's primary button color */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-decoration: none; /* Make it behave like the other nav items */
+    cursor: pointer;
+
+    /* THIS IS THE KEY: It uses the exact same margin as your other nav links */
+    margin-left: 1.5rem; 
+    
+    /* A nice little touch for when you hover over it */
+    transition: transform 0.3s ease;
+}
+
+.user-icon:hover {
+    transform: scale(1.1);
 }
