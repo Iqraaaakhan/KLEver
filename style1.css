@@ -1,0 +1,211 @@
+/* --- Google Fonts Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+/* --- Universal Styles & Body Background --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* Soft, pleasant gradient background instead of a distracting image */
+    background:rgba(187, 180, 172, 0.856); 
+}
+
+/* --- The Main Form Container --- */
+.form-container {
+    width: 450px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    /* Soft, layered shadow for a professional "lifted" effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Form Header (Icon + Title) --- */
+.form-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Space between icon and text */
+    margin-bottom: 25px;
+}
+
+.form-header .icon {
+    font-size: 32px;
+    color: #c79a7b; /* A warm, aesthetic terracotta color */
+}
+
+.form-header h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+/* --- Input Fields & Icons --- */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    /* Bigger field height */
+    height: 55px; 
+    background-color: #f0f2f5;
+    border: 2px solid transparent; /* No border by default */
+    border-radius: 10px;
+    outline: none;
+    font-size: 16px;
+    color: #333;
+    /* Generous padding for text */
+    padding: 0 20px;
+    transition: all 0.3s ease;
+}
+
+.input-group input::placeholder {
+    color: #999;
+}
+
+/* --- The "Focus" Effect (when you click in a field) --- */
+.input-group input:focus {
+    border-color: #c79a7b; /* The warm terracotta color */
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(199, 154, 123, 0.2);
+}
+
+/* --- Submit Button --- */
+.btn {
+    width: 100%;
+    height: 50px;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    /* A rich, gradient button */
+    background: linear-gradient(45deg, #c79a7b, #ae8362);
+    box-shadow: 0 4px 10px rgba(199, 154, 123, 0.4);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(199, 154, 123, 0.5);
+}
+
+/* --- Link to switch between Login/Register --- */
+.switch-form {
+    font-size: 15px;
+    text-align: center;
+    margin-top: 25px;
+    color: #bab6b6;
+}
+
+.switch-form a {
+    color: #ae8362; /* Accent color for the link */
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.switch-form a:hover {
+    text-decoration: underline;
+}
+
+/* --- Error Message Styling --- */
+.error-message {
+    color: #842029;
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+/* Add this to the end of your style.css file */
+
+.success-message {
+    width: 370px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Add this new class to your style1.css file */
+
+.success-message {
+    color: #0f5132;
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+/* --- ADD THIS CSS TO THE END OF YOUR style1.css FILE --- */
+
+/* A container for the dashboard content, similar to the login form */
+.dashboard-container {
+    width: 450px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 6px white(0, 0, 0, 0.04), 0 10px 20px white (241, 238, 238, 0.05);
+    text-align: center;
+}
+
+/* Styles for the success message box */
+.success-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px; /* Space between icon and text */
+    margin-bottom: 30px;
+}
+
+.success-box .icon {
+    font-size: 28px;
+    color: #28a745; /* A nice, friendly green */
+}
+
+.success-box p {
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Styles for the logout button */
+.logout-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 10px;
+    background-color: white; /* A neutral gray */
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color:white;
+    transform: translateY(-2px);
+}
