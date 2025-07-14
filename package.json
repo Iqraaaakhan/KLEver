@@ -1,0 +1,10 @@
+{
+  "name": "klever-canteen",
+  "version": "1.0.0",
+  "description": "A smart canteen automation system for KLE Technological University.",
+  "main": "index.php",
+  "scripts": {
+  "php-server": "php -S localhost:8000",
+  "live-reload": "browser-sync start --proxy 'localhost:8000' --files '**/*.php, **/*.css, **/*.js'",
+  "start": "concurrently \"npm:php-server\" \"npm:live-reload\""
+}}

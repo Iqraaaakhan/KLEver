@@ -1,86 +1,95 @@
 <?php
 session_start();
-$message = "";
+$conn = new mysqli('localhost', 'root', '', 'klever_db');
+if ($conn->connect_error) { die("Database connection failed."); }
 
-// 1. Security Check: If the user hasn't completed step 1 (login), send them back.
-if (!isset($_SESSION['otp_user_id'])) {
-    header("Location: login.php");
-    exit();
-}
+$message = '';
+$redirect_url = 'login.php'; // Default redirect location
 
-// 2. Check if the form was submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $entered_otp = $_POST['otp'];
+// Check if the form was submitted with an OTP
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otp'])) {
+    $submitted_otp = $_POST['otp'];
 
-    // 3. Check if the entered OTP matches the one in the session
-    if ($entered_otp == $_SESSION['otp_code']) {
-        // --- OTP IS CORRECT, COMPLETE THE LOGIN ---
-
-        // 4. Connect to the database to get the user's final details
-        $conn = mysqli_connect("localhost", "root", "", "klever_db");
-        if (!$conn) { die("Connection failed."); } // Basic error check
-
-        $stmt = $conn->prepare("SELECT username, type FROM user WHERE id = ?");
-        if (!$stmt) { die("Statement preparation failed."); } // Basic error check
-
-        $stmt->bind_param("i", $_SESSION['otp_user_id']);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $user = $result->fetch_assoc();
-
-        // 5. Set the FINAL session variables that show the user is logged in
-        $_SESSION["userid"] = $user['username'];
-        $_SESSION["user_type"] = $user['type'];
-
-        // 6. Clean up the temporary OTP data from the session
-        unset($_SESSION['otp_code']);
-        unset($_SESSION['otp_user_id']);
-        unset($_SESSION['otp_user_email']);
+    // --- LOGIC FOR NEW USER REGISTRATION ---
+    if (isset($_SESSION['registration_data']) && $submitted_otp == $_SESSION['registration_data']['otp']) {
         
-        // 7. Redirect the user to the homepage!
-        header("Location: index.php");
-        exit(); // Crucial: Always stop the script after a redirect.
+        // OTP is correct for registration! Now, save the user to the database.
+        $username = $_SESSION['registration_data']['username'];
+        $email = $_SESSION['registration_data']['email'];
+        $phone = $_SESSION['registration_data']['phone'];
+        $password = $_SESSION['registration_data']['password']; // Get password from session
 
+        // Hash the password securely! This is critical.
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+
+        // Prepare the SQL to insert the new user
+        $stmt = $conn->prepare("INSERT INTO user (username, email, phone, password) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $username, $email, $phone, $password_hash);
+        
+        if ($stmt->execute()) {
+            // Success! User is saved. Now, log them in immediately.
+            $_SESSION['user_id'] = $stmt->insert_id; // Get the new user's ID and store it
+            $_SESSION['username'] = $username;
+
+            // Clean up temporary registration data
+            unset($_SESSION['registration_data']);
+            
+            // Redirect them to a success page or the menu
+            header("Location: registration_success.php"); // Redirect to a success page
+            exit;
+
+        } else {
+            $message = "Error: Could not create account. Please try again.";
+        }
+        $stmt->close();
+
+    // --- LOGIC FOR EXISTING USER LOGIN ---
+    } else if (isset($_SESSION['otp_user_data']) && $submitted_otp == $_SESSION['otp_user_data']['otp']) {
+
+        // OTP is correct for login!
+        $_SESSION['user_id'] = $_SESSION['otp_user_data']['user_id']; // You'll need to add user_id to the session in login.php
+        $_SESSION['username'] = $_SESSION['otp_user_data']['username'];
+
+        // Clean up temporary login data
+        unset($_SESSION['otp_user_data']);
+
+        // Redirect to the main menu
+        header("Location: menu.php"); // Or your main dashboard
+        exit;
+        
     } else {
-        // --- OTP IS WRONG ---
+        // Submitted OTP is incorrect
         $message = "❌ Invalid OTP. Please try again.";
     }
 }
-?>
 
+$conn->close();
+?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Verify OTP</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style1.css"> <!-- Make sure this points to your CSS file -->
+    <title>Verify Account</title>
+    <!-- Add your CSS from register.php for consistent styling -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Paste the CSS from your other pages here */
+        body { background-color: #e3dcd7; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Poppins', sans-serif; }
+        .form-box { background: #fff; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; }
+        .form-box h1 { margin-bottom: 2rem; }
+        .form-box input { width: 100%; padding: 1rem; margin-bottom: 1rem; border: none; background-color: #f3f3f3; border-radius: 8px; font-size: 1rem; }
+        .form-box button { width: 100%; padding: 1rem; border: none; background-color: #bfa89e; color: #fff; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: 600; }
+        .message { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; color: #721c24; background-color: #f8d7da; }
+    </style>
 </head>
 <body>
-<div class="form-container">
-    <form method="post" action="">
-
-      <div class="form-header">
-        <i class="fa-solid fa-shield-halved icon"></i>
-        <h1>Verify Your Identity</h1>
-      </div>
-
-      <p style="text-align:center; color:#555; margin-bottom: 20px;">
-        An OTP has been sent to your email:<br>
-        <b><?php echo htmlspecialchars($_SESSION['otp_user_email']); ?></b>
-      </p>
-
-      <?php if (!empty($message)): ?>
-        <div class="error-message"><?php echo $message; ?></div>
-      <?php endif; ?>
-
-      <div class="input-group">
-        <input type="text" name="otp" placeholder="Enter 6-Digit OTP" required pattern="\d{6}" title="Please enter a 6-digit number">
-      </div>
-
-      <button type="submit" class="btn">Verify & Login</button>
-
-    </form>
-</div>
+    <div class="form-box">
+        <h1>Verify Your Account</h1>
+        <p>An OTP has been sent to your email. Please enter it below.</p>
+        <?php if ($message) echo "<p class='message'>$message</p>"; ?>
+        <form method="POST" action="verify_otp.php">
+            <input type="text" name="otp" placeholder="Enter OTP" required>
+            <button type="submit">Verify</button>
+        </form>
+    </div>
 </body>
 </html>

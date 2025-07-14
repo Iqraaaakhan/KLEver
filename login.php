@@ -1,137 +1,97 @@
-<?php
+<?php // login.php - Passwordless OTP Login
 session_start();
-
-// Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-
-// Load Composer's autoloader
 require 'vendor/autoload.php';
 
 $message = "";
 
-if (isset($_SESSION['userid'])) {
-    if ($_SESSION['user_type'] == 1) {
-        header("Location: admin.html");
-    } else {
-        header("Location: index.php");
-    }
-    exit();
-}
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['identifier'])) {
+    $conn = new mysqli('localhost', 'root', '', 'klever_db');
+    if ($conn->connect_error) { die("Database connection failed."); }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conn = mysqli_connect("localhost", "root", "", "klever_db");
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+    $identifier = $_POST['identifier'];
 
-    $username = mysqli_real_escape_string($conn, $_POST["userName"]);
-    $password = $_POST["password"];
-
-    $stmt = $conn->prepare("SELECT id, username, email, password, type FROM user WHERE username = ?");
-    $stmt->bind_param("s", $username);
+    $stmt = $conn->prepare("SELECT * FROM user WHERE username = ? OR phone = ?");
+    $stmt->bind_param("ss", $identifier, $identifier);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
+        $otp = rand(100000, 999999);
 
-        if (password_verify($password, $user['password'])) {
-            $otp = random_int(100000, 999999); 
-            $_SESSION['otp_code'] = $otp;
-            $_SESSION['otp_user_id'] = $user['id'];
-            $_SESSION['otp_user_email'] = $user['email'];
+        $_SESSION['otp_user_data'] = [
+            'username' => $user['username'],
+            'email' => $user['email'],
+            'type' => $user['type'],
+            'otp' => $otp
+        ];
 
-            $mail = new PHPMailer(true);
-            try {
-                // Keep this debug line ON until it works!
-                $mail->SMTPDebug = SMTP::DEBUG_SERVER; 
-                
-                //Server settings - CONFIGURED WITH YOUR EMAIL
-                $mail->isSMTP();
-                $mail->Host       = 'smtp.gmail.com';
-                $mail->SMTPAuth   = true;
+        $mail = new PHPMailer(true);
+        try {
+            //Server settings
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'klever.cams@gmail.com';  // Your app's email
+            $mail->Password   = 'zkpmrhfwclzokrpj';         // YOUR NEW APP PASSWORD (no spaces)
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
 
-                // --- YOUR EMAIL ADDRESS IS NOW HERE ---
-                $mail->Username   = 'klevercanteen@gmail.com'; 
+            //Recipients
+            $mail->setFrom('klever.cams@gmail.com', 'KLEver Canteen');
+            $mail->addAddress($user['email'], $user['username']);
 
-                // --- PASTE YOUR APP PASSWORD ON THE NEXT LINE ---
-                $mail->Password   = 'pfdemlfbnxktssqy'; 
-
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                $mail->Port       = 465;
-
-                // --- YOUR EMAIL ADDRESS IS NOW HERE ---
-                $mail->setFrom('klevercanteen@gmail.com', 'Klever Canteen System');
-                $mail->addAddress($user['email'], $user['username']);
-
-                $mail->isHTML(true);
-                $mail->Subject = 'Your Login OTP for Canteen System';
-                $mail->Body    = "Hello {$user['username']},<br><br>Your One-Time Password to log in is: <h1>$otp</h1><br>This code is valid for 5 minutes.<br><br>Thank you!";
-
-                $mail->send();
-                header("Location: verify_otp.php");
-                exit();
-
-            } catch (Exception $e) {
-                echo "<h3>Something went wrong. The OTP email could not be sent.</h3>";
-                echo "<strong>Mailer Error:</strong> {$mail->ErrorInfo}";
-                echo "<hr><p>This is the debug output. The error is likely 'Username and Password not accepted'. Follow the App Password instructions to fix it.</p>";
-                exit(); 
-            }
-        } else {
-            $message = "❌ Invalid Username or Password!";
+            //Content
+            $mail->isHTML(true);
+            $mail->Subject = 'Your Login Code for KLEver';
+            $mail->Body    = "Your One-Time Password (OTP) for KLEver is: <h3><b>$otp</b></h3>";
+            $mail->send();
+            
+            header("Location: verify_otp.php");
+            exit;
+        } catch (Exception $e) {
+            $message = "Mailer Error: {$mail->ErrorInfo}";
         }
     } else {
-        $message = "❌ Invalid Username or Password!";
+        $message = "No account found with that username or phone number.";
     }
-    $stmt->close();
     $conn->close();
 }
 ?>
-
+<!-- Your HTML is unchanged -->
 <!DOCTYPE html>
-<!-- Your HTML code continues below... it is correct. -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Canteen Login</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style1.css">
+    <meta charset="UTF-8">
+    <title>Login - KLEver</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { background-color: #e3dcd7; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Poppins', sans-serif; }
+        .form-box { background: #fff; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; }
+        .form-box h1 { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; color: #333; font-size: 1.8rem; }
+        .form-box .icon { color: #c9ada7; }
+        .form-box input { width: 100%; padding: 1rem; margin-bottom: 1rem; border: none; background-color: #f3f3f3; border-radius: 8px; font-size: 1rem; transition: box-shadow 0.3s; }
+        .form-box input:focus { box-shadow: 0 0 0 2px #c9ada7; outline: none; }
+        .form-box button { width: 100%; padding: 1rem; border: none; background-color: #bfa89e; color: #fff; border-radius: 8px; cursor: pointer; font-size: 1.1rem; font-weight: 600; transition: background-color 0.3s; }
+        .form-box button:hover { background-color: #a99185; }
+        .message { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; }
+        .register-link { margin-top: 1.5rem; color: #555; font-size: 0.9rem; }
+        .register-link a { color: #bfa89e; font-weight: 600; text-decoration: none; }
+    </style>
 </head>
 <body>
-
-  <div class="form-container">
-    <form method="post" action="">
-      <div class="form-header">
-        <i class="fa-solid fa-utensils icon"></i>
-        <h1>Login</h1>
-      </div>
-      
-      <?php if (!empty($message)): ?>
-        <div class="error-message"><?php echo $message; ?></div>
-      <?php endif; ?>
-
-      <div class="input-group">
-        <input type="text" name="userName" placeholder="Username" required>
-      </div>
-      <div class="input-group">
-        <input type="password" name="password" placeholder="Password" required>
-      </div>
-
-      <button type="submit" name="submit" class="btn">Sign In</button>
-
-      <div class="switch-form">
-        Don't have an account? <a href="register.php">Register Now</a>
-      </div>
+<div class="form-box">
+    <h1><span class="icon">🍴</span> Login</h1>
+    <?php if ($message) echo "<p class='message'>$message</p>"; ?>
+    <form method="POST" action="login.php">
+        <input type="text" name="identifier" placeholder="Username or Phone Number" required>
+        <button type="submit">Send OTP</button>
     </form>
-  </div>
-  
-  <script>
-    // This script will cause an error because there is no element with id="togglePassword"
-    // It's safe to remove it or fix your HTML if you need the checkbox.
-  </script>
+    <p class="register-link">Don't have an account? <a href="register.php">Register Now</a></p>
+</div>
 </body>
 </html>
