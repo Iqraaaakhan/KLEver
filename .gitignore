@@ -1,0 +1,14 @@
+# Mac system files
+.DS_Store
+
+# Compressed files
+*.zip
+*.rar
+*.gz
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# Dependency folders (these can be re-installed)
+vendor/
