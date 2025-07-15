@@ -73,3 +73,20 @@
     font-weight: 600;
 }
 .btn-success { background-color: #28a745; }
+
+/* Add these styles to the end of admin_dashboard_styles.css */
+
+/* This style will apply to the entire row for an inactive item */
+.inactive-row {
+    opacity: 0.5; /* Makes the row semi-transparent */
+    background-color: #f8f9fa; /* A light grey background */
+}
+.inactive-row strong {
+    text-decoration: line-through; /* Puts a line through the item name */
+}
+
+/* Style for the new Restore button */
+.btn-restore {
+    background-color: #28a745; /* A nice green for a positive action */
+    color: white;
+}

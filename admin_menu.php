@@ -1,53 +1,43 @@
 <?php
 session_start();
 
-// SECURITY CHECK: This is critical. Redirect any non-admin away immediately.
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: admin_login.php");
     exit;
 }
 
-// 1. Connect to the database.
 $conn = new mysqli('localhost', 'root', '', 'klever_db');
 if ($conn->connect_error) { 
     die("Connection Failed: " . $conn->connect_error); 
 }
 
-// 2. Fetch all products from your master 'products' table.
-$products_result = $conn->query("SELECT * FROM products ORDER BY name ASC");
+// THIS IS THE KEY CHANGE: We now fetch ALL products, so we can style them differently.
+$products_result = $conn->query("SELECT * FROM products ORDER BY is_active DESC, name ASC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Your head content is perfect, no changes needed -->
   <meta charset="UTF-8">
   <title>Menu Management - KLEver Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- We use the exact same links as your dashboard for a consistent look -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Lora:wght@700&display=swap" rel="stylesheet">
-  <!-- This links to your existing admin stylesheet -->
   <link rel="stylesheet" href="admin_dashboard_styles.css"> 
 </head>
 <body>
 <div class="admin-wrapper">
     
-    <?php 
-    // This includes your existing sidebar for consistent navigation.
-    // The sidebar will correctly highlight "Menu Management" as the active page.
-    include 'admin_sidebar.php'; 
-    ?>
+    <?php include 'admin_sidebar.php'; ?>
 
-    <!-- Main Content Area -->
     <div class="main-content">
         <div class="header-bar">
             <h1>Menu Management</h1>
-            <!-- This button will be made functional in our next step -->
-<a href="admin_add_item.php" class="btn btn-success"><i class="fas fa-plus"></i> Add New Item</a>
+            <a href="admin_add_item.php" class="btn btn-success"><i class="fas fa-plus"></i> Add New Item</a>
         </div>
         
         <p class="page-description">Here you can view, add, edit, and manage all the food items available in the canteen.</p>
 
-        <!-- This table has the exact same structure as your screenshot -->
         <table>
             <thead>
                 <tr>
@@ -60,30 +50,34 @@ $products_result = $conn->query("SELECT * FROM products ORDER BY name ASC");
             </thead>
             <tbody>
                 <?php if ($products_result->num_rows > 0): ?>
-                    <!-- The PHP loop starts here -->
                     <?php while($product = $products_result->fetch_assoc()): ?>
-                    <tr>
-                        <td><img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="item-image"></td>
-                        <td><strong><?php echo htmlspecialchars($product['name']); ?></strong></td>
-                        <td>₹<?php echo number_format($product['price'], 2); ?></td>
-                        <td>
-                            <!-- This dynamically shows "Available" in green or "Unavailable" in red -->
-                            <?php if ($product['is_available']): ?>
-                                <span class="status-available">Available</span>
-                            <?php else: ?>
-                                <span class="status-unavailable">Unavailable</span>
-                            <?php endif; ?>
-                        </td>
-                        <td class="actions">
-                            <!-- These links are placeholders for the next phase (CRUD operations) -->
-                            <a href="admin_edit_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                            <a href="admin_delete_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-delete"><i class="fas fa-trash"></i> Delete</a>
-                        </td>
-                    </tr>
+                        <!-- THIS IS THE NEW LOGIC: We add a class to the row if the item is inactive -->
+                        <tr class="<?php echo ($product['is_active'] == 0) ? 'inactive-row' : ''; ?>">
+                            <td><img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="item-image"></td>
+                            <td><strong><?php echo htmlspecialchars($product['name']); ?></strong></td>
+                            <td>₹<?php echo number_format($product['price'], 2); ?></td>
+                            <td>
+                                <?php if ($product['is_active']): ?>
+                                    <span class="status-available">Available</span>
+                                <?php else: ?>
+                                    <span class="status-unavailable">Inactive</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="actions">
+                                <!-- THIS IS THE NEW LOGIC: We show different buttons based on the item's status -->
+                                <?php if ($product['is_active']): ?>
+                                    <!-- If active, show Edit and Delete buttons -->
+                                    <a href="admin_edit_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                                    <a href="admin_delete_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to mark this item as inactive?');"><i class="fas fa-trash"></i> Delete</a>
+                                <?php else: ?>
+                                    <!-- If inactive, show a Restore button -->
+                                    <a href="admin_restore_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-restore"><i class="fas fa-undo"></i> Restore</a>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
                     <?php endwhile; ?>
-                    <!-- The PHP loop ends here -->
                 <?php else: ?>
-                    <tr><td colspan="5" style="text-align:center;">No menu items found. Click "Add New Item" to get started.</td></tr>
+                    <tr><td colspan="5" style="text-align:center;">No menu items found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
