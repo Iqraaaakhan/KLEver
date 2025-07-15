@@ -102,9 +102,8 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
         }
 
         // Get the ID of the latest order currently displayed on the page.
-        // We will store this in a hidden input field inside the form.
-        const latestOrderId = firstOrderRow.querySelector('input[name="order_id"]').value;
-        
+// This version correctly finds the input field inside the form within the row.
+const latestOrderId = firstOrderRow.querySelector('.update-form input[name="order_id"]').value;        
         // Call our new PHP script in the background.
         fetch(`admin_check_orders.php?last_id=${latestOrderId}`)
             .then(response => response.json())
