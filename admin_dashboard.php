@@ -25,47 +25,11 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Lora:wght@700&display=swap" rel="stylesheet">
-  <style>
-    /* This CSS creates a professional two-column layout */
-    body { background-color: #f4f7f6; font-family: 'Poppins', sans-serif; margin: 0; }
-    .admin-wrapper { display: flex; }
-    .sidebar { width: 250px; background: #322C2B; color: #E4C59E; min-height: 100vh; position: fixed; display: flex; flex-direction: column; }
-    .sidebar-header { text-align: center; padding: 1.5rem 0; margin: 0; font-family: 'Lora', serif; border-bottom: 1px solid #444; font-size: 1.8rem; }
-    .sidebar-nav { list-style: none; padding: 0; margin-top: 1rem; }
-    .sidebar-nav li a { color: #E4C59E; text-decoration: none; display: flex; align-items: center; padding: 1rem; transition: background-color 0.3s, color 0.3s; font-size: 1rem; }
-    .sidebar-nav li.active a, .sidebar-nav li a:hover { background-color: #803D3B; color: #fff; }
-    .sidebar-nav li a i { margin-right: 1rem; width: 20px; text-align: center; }
-    .logout-link { margin-top: auto; border-top: 1px solid #444; } /* Pushes logout to the bottom */
-    
-    .main-content { margin-left: 250px; /* Makes space for the fixed sidebar */ flex-grow: 1; padding: 2rem; }
-    .main-content h1 { margin-top: 0; color: #322C2B; }
-    table { width: 100%; border-collapse: collapse; box-shadow: 0 4px 15px rgba(0,0,0,0.08); background: #fff; border-radius: 8px; overflow: hidden; font-size: 0.9rem; }
-    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #f0f0f0; }
-    th { background-color: #AF8260; color: white; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
-    td ul { padding-left: 20px; margin: 0; }
-    .status-pending { color: #d9822b; font-weight: bold; }
-    .status-preparing { color: #007bff; font-weight: bold; }
-    .status-completed { color: #28a745; font-weight: bold; }
-    .update-form { display: flex; align-items: center; gap: 8px; }
-    .update-form select, .update-form button { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; }
-    .update-form button { background-color: #803D3B; color: white; cursor: pointer; font-weight: 600; }
-  </style>
+  <link rel="stylesheet" href="admin_dashboard_styles.css">
 </head>
 <body>
 <div class="admin-wrapper">
-    <!-- Line 61: The Sidebar Navigation -->
-    <div class="sidebar">
-        <h2 class="sidebar-header">KLEver</h2>
-        <ul class="sidebar-nav">
-            <li class="active"><a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
-            <li><a href="#"><i class="fas fa-utensils"></i>Menu Management</a></li>
-            <li><a href="#"><i class="fas fa-users"></i>Users</a></li>
-        </ul>
-        <ul class="sidebar-nav logout-link">
-             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
-        </ul>
-    </div>
-
+   <?php include 'admin_sidebar.php'; ?>
     <!-- Line 73: The Main Content Area for the Order List -->
     <div class="main-content">
         <h1>Dashboard</h1>

@@ -18,7 +18,7 @@ if ($conn->connect_error) {
 // =======================================================
 //  FETCH SPECIALS QUERY
 // =======================================================
-$specials_query = "SELECT * FROM menu_items WHERE is_special = 1 AND is_available = 1 
+$specials_query = "SELECT * FROM products WHERE is_featured = 1 AND is_available = 1 
                     ORDER BY 
                         CASE 
                             WHEN name = 'Classic Veg Biryani' THEN 0 

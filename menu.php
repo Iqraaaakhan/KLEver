@@ -20,10 +20,10 @@ $search_term = '';
 if (isset($_GET['search_query']) && !empty($_GET['search_query'])) {
     $search_term = $conn->real_escape_string($_GET['search_query']);
     // The '%' are wildcards, so 'biryani' matches 'veg biryani', 'chicken biryani', etc.
-    $menu_query = "SELECT * FROM full_menu WHERE is_available = 1 AND name LIKE '%$search_term%'";
+    $menu_query = "SELECT * FROM products WHERE is_available = 1 AND name LIKE '%$search_term%'";
 } else {
     // If no search, get all items
-    $menu_query = "SELECT * FROM full_menu WHERE is_available = 1";
+    $menu_query = "SELECT * FROM products WHERE is_available = 1";
 }
 $menu_result = $conn->query($menu_query);
 ?>

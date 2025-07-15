@@ -14,7 +14,7 @@ if (!$q) {
     exit();
 }
 
-$sql = "SELECT name, image_url AS image, price FROM full_menu 
+$sql = "SELECT name, image_url AS image, price FROM products 
         WHERE name LIKE '%$q%' AND is_available = 1 LIMIT 6";
 
 

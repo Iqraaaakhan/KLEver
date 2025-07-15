@@ -18,13 +18,13 @@ USE `klever_db`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `full_menu`
+-- Table structure for table `products`
 --
 
-DROP TABLE IF EXISTS `full_menu`;
+DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `full_menu` (
+CREATE TABLE `products` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `price` decimal(10,2) NOT NULL,
@@ -35,23 +35,23 @@ CREATE TABLE `full_menu` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `full_menu`
+-- Dumping data for table `products`
 --
 
-LOCK TABLES `full_menu` WRITE;
-/*!40000 ALTER TABLE `full_menu` DISABLE KEYS */;
-INSERT INTO `full_menu` VALUES (1,'Tea',10.00,'https://thespicerootindiancuisine.com/wp-content/uploads/2023/03/Indian-Masala-Tea.jpg',1),(2,'Idli',30.00,'https://static.toiimg.com/photo/68631114.cms',1),(3,'Dosa',60.00,'https://media.cntraveller.in/wp-content/uploads/2020/05/dosa-recipes-1366x768.jpg',1),(4,'Poha',25.00,'https://st2.depositphotos.com/5653638/11810/i/450/depositphotos_118105520-stock-photo-poha-or-aalu-poha-or.jpg',1),(5,'Coffee',30.00,'http://i.huffpost.com/gen/1693731/images/o-COFFEE-facebook.jpg',1),(6,'Pav Bhaji',50.00,'https://www.thestatesman.com/wp-content/uploads/2019/07/pav-bhaji.jpg',1),(7,'Pasta',90.00,'https://images.pexels.com/photos/1438672/pexels-photo-1438672.jpeg?cs=srgb&dl=food-photography-of-pasta-1438672.jpg&fm=jpg',1),(8,'Samosa',15.00,'https://cdn.pixabay.com/photo/2024/02/04/20/02/ai-generated-8553025_1280.jpg',1),(9,'Vada',25.00,'https://images.slurrp.com/prod/recipe_images/transcribe/breakfast/Medu-Vada.webp',1),(10,'Upma',40.00,'https://simmertoslimmer.com/wp-content/uploads/2014/02/Rava-Upma.jpg',1),(11,'Noodles',80.00,'https://www.recipetineats.com/wp-content/uploads/2022/05/Supreme-Soy-Noodles_1-SQ.jpg',1),(12,'Juice',35.00,'https://images.ctfassets.net/yixw23k2v6vo/2oidT8ZVeVYwE7L7ksr0hE/614f7592570de77b4a0260e5c80c113a/large-GettyImages-825882916-3000x2000.jpg',1),(13,'Chapati',15.00,'https://recipes.timesofindia.com/thumb/61203720.cms?imgsize=670417&width=800&height=800',1),(14,'Pizza',120.00,'https://media.istockphoto.com/photos/cheesy-pepperoni-pizza-picture-id938742222?b=1&k=20&m=938742222&s=170667a&w=0&h=HyfY78AeiQM8vZbIea-iiGmNxHHuHD-PVVuHRvrCIj4=',1),(15,'Spring Rolls',60.00,'https://wallpaperaccess.com/full/6905828.jpg',1),(16,'Fried Rice',70.00,'https://wallpaperaccess.com/full/2175404.jpg',1),(17,'Burger',50.00,'https://wallpapercave.com/wp/wp1987065.jpg',1),(18,'Momos',45.00,'https://static.vecteezy.com/system/resources/thumbnails/039/002/703/small_2x/ai-generated-delicious-momos-with-chutney-on-the-leaf-captured-with-selective-focus-photo.jpg',1),(19,'Cutlet',30.00,'https://1.bp.blogspot.com/-8MPWfPnCZTc/VB1Y40TRuqI/AAAAAAAAAPY/XluQZxXKKng/s1600/Vegetable-cutlet.jpg',1),(20,'Paratha',35.00,'https://www.whiskaffair.com/wp-content/uploads/2020/06/Lachha-Paratha-2-1.jpg',1),(21,'Puri Bhaji',40.00,'https://as2.ftcdn.net/v2/jpg/04/32/10/33/1000_F_432103366_8Ip4tLE7vEiE2JuYr1AoCN44UR5kyA5w.jpg',1);
-/*!40000 ALTER TABLE `full_menu` ENABLE KEYS */;
+LOCK TABLES `products` WRITE;
+/*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,'Tea',10.00,'https://thespicerootindiancuisine.com/wp-content/uploads/2023/03/Indian-Masala-Tea.jpg',1),(2,'Idli',30.00,'https://static.toiimg.com/photo/68631114.cms',1),(3,'Dosa',60.00,'https://media.cntraveller.in/wp-content/uploads/2020/05/dosa-recipes-1366x768.jpg',1),(4,'Poha',25.00,'https://st2.depositphotos.com/5653638/11810/i/450/depositphotos_118105520-stock-photo-poha-or-aalu-poha-or.jpg',1),(5,'Coffee',30.00,'http://i.huffpost.com/gen/1693731/images/o-COFFEE-facebook.jpg',1),(6,'Pav Bhaji',50.00,'https://www.thestatesman.com/wp-content/uploads/2019/07/pav-bhaji.jpg',1),(7,'Pasta',90.00,'https://images.pexels.com/photos/1438672/pexels-photo-1438672.jpeg?cs=srgb&dl=food-photography-of-pasta-1438672.jpg&fm=jpg',1),(8,'Samosa',15.00,'https://cdn.pixabay.com/photo/2024/02/04/20/02/ai-generated-8553025_1280.jpg',1),(9,'Vada',25.00,'https://images.slurrp.com/prod/recipe_images/transcribe/breakfast/Medu-Vada.webp',1),(10,'Upma',40.00,'https://simmertoslimmer.com/wp-content/uploads/2014/02/Rava-Upma.jpg',1),(11,'Noodles',80.00,'https://www.recipetineats.com/wp-content/uploads/2022/05/Supreme-Soy-Noodles_1-SQ.jpg',1),(12,'Juice',35.00,'https://images.ctfassets.net/yixw23k2v6vo/2oidT8ZVeVYwE7L7ksr0hE/614f7592570de77b4a0260e5c80c113a/large-GettyImages-825882916-3000x2000.jpg',1),(13,'Chapati',15.00,'https://recipes.timesofindia.com/thumb/61203720.cms?imgsize=670417&width=800&height=800',1),(14,'Pizza',120.00,'https://media.istockphoto.com/photos/cheesy-pepperoni-pizza-picture-id938742222?b=1&k=20&m=938742222&s=170667a&w=0&h=HyfY78AeiQM8vZbIea-iiGmNxHHuHD-PVVuHRvrCIj4=',1),(15,'Spring Rolls',60.00,'https://wallpaperaccess.com/full/6905828.jpg',1),(16,'Fried Rice',70.00,'https://wallpaperaccess.com/full/2175404.jpg',1),(17,'Burger',50.00,'https://wallpapercave.com/wp/wp1987065.jpg',1),(18,'Momos',45.00,'https://static.vecteezy.com/system/resources/thumbnails/039/002/703/small_2x/ai-generated-delicious-momos-with-chutney-on-the-leaf-captured-with-selective-focus-photo.jpg',1),(19,'Cutlet',30.00,'https://1.bp.blogspot.com/-8MPWfPnCZTc/VB1Y40TRuqI/AAAAAAAAAPY/XluQZxXKKng/s1600/Vegetable-cutlet.jpg',1),(20,'Paratha',35.00,'https://www.whiskaffair.com/wp-content/uploads/2020/06/Lachha-Paratha-2-1.jpg',1),(21,'Puri Bhaji',40.00,'https://as2.ftcdn.net/v2/jpg/04/32/10/33/1000_F_432103366_8Ip4tLE7vEiE2JuYr1AoCN44UR5kyA5w.jpg',1);
+/*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `menu_items`
+-- Table structure for table `products`
 --
 
-DROP TABLE IF EXISTS `menu_items`;
+DROP TABLE IF EXISTS `products`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `menu_items` (
+CREATE TABLE `products` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` text,
@@ -65,13 +65,13 @@ CREATE TABLE `menu_items` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `menu_items`
+-- Dumping data for table `products`
 --
 
-LOCK TABLES `menu_items` WRITE;
-/*!40000 ALTER TABLE `menu_items` DISABLE KEYS */;
-INSERT INTO `menu_items` VALUES (1,'Spicy Paneer Wrap',NULL,99.00,'images/paneer-wrap.jpg','Specials',1,1),(2,'Classic Veg Biryani',NULL,129.00,'images/veg-biryani.jpg','Main Course',1,1),(3,'Fruit Smoothie',NULL,79.00,'images/smoothie.jpg','Beverages',1,1),(4,'Choco Lava Cake',NULL,85.00,'images/choco-lava.jpg','Desserts',1,1),(5,'Masala Dosa',NULL,70.00,'images/masala-dosa.jpg','Breakfast',1,1),(6,'Puri Bhaji',NULL,65.00,'images/puri-bhaji.jpg','Breakfast',1,1),(7,'Gobi Manchuri',NULL,110.00,'images/gobi-manchuri.jpg','Starters',1,1);
-/*!40000 ALTER TABLE `menu_items` ENABLE KEYS */;
+LOCK TABLES `products` WRITE;
+/*!40000 ALTER TABLE `products` DISABLE KEYS */;
+INSERT INTO `products` VALUES (1,'Spicy Paneer Wrap',NULL,99.00,'images/paneer-wrap.jpg','Specials',1,1),(2,'Classic Veg Biryani',NULL,129.00,'images/veg-biryani.jpg','Main Course',1,1),(3,'Fruit Smoothie',NULL,79.00,'images/smoothie.jpg','Beverages',1,1),(4,'Choco Lava Cake',NULL,85.00,'images/choco-lava.jpg','Desserts',1,1),(5,'Masala Dosa',NULL,70.00,'images/masala-dosa.jpg','Breakfast',1,1),(6,'Puri Bhaji',NULL,65.00,'images/puri-bhaji.jpg','Breakfast',1,1),(7,'Gobi Manchuri',NULL,110.00,'images/gobi-manchuri.jpg','Starters',1,1);
+/*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
