@@ -82,7 +82,7 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
                     </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <!-- Line 122: If there are no orders, show a friendly message -->
+                    <!-- Line : If there are no orders, show a friendly message -->
                     <tr><td colspan="7" style="text-align:center;">No orders yet. Check back soon!</td></tr>
                 <?php endif; ?>
             </tbody>
