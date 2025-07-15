@@ -177,73 +177,66 @@ $conn->close();
         </div>
     </div>
 <?php include 'footer.php'; ?>
-// Find the </body> tag at the end of track_order.php
-// And add this ENTIRE <script> block right before it.
-
 <script>
-    // This self-executing function will contain all our logic to avoid conflicts.
+    // This self-executing function contains all our logic.
     (function() {
-        // Find the elements on the page we need to interact with.
         const orderResultBox = document.querySelector('.order-result');
-        const progressBarLine = document.querySelector('.progress-line');
-        const stepIcons = document.querySelectorAll('.step'); // Get all three steps
+        if (!orderResultBox) return; // Exit if no order is displayed
 
-        // If there's no order result box on the page, do nothing.
-        if (!orderResultBox) {
-            return;
-        }
-
-        // Get the current order code from the h3 tag.
         const orderCodeElement = orderResultBox.querySelector('h3');
         const orderCode = orderCodeElement ? orderCodeElement.textContent.replace('Order #', '').trim() : null;
+        if (!orderCode) return; // Exit if we can't find the order code
 
-        if (!orderCode) {
-            return;
-        }
+        // --- CORRECTED: Get references to the specific elements we need to change ---
+        const progressBarLine = document.querySelector('.progress-line');
+        const steps = document.querySelectorAll('.step'); // Get all three step containers
 
-        // This function updates the UI based on the new status.
         function updateOrderStatusUI(status) {
-            let progressPercentage = '0%';
-            // De-activate all steps first
-            stepIcons.forEach(step => step.classList.remove('active'));
+            let progressWidth = '0%';
+            
+            // First, reset all steps to their default (inactive) state
+            steps.forEach(step => step.classList.remove('active'));
 
-            // Activate steps based on the status
+            // Now, activate steps based on the current status
             if (status === 'Pending' || status === 'Preparing' || status === 'Completed') {
-                stepIcons[0].classList.add('active'); // Order Placed
+                steps[0].classList.add('active'); // Activate "Order Placed"
             }
             if (status === 'Preparing' || status === 'Completed') {
-                stepIcons[1].classList.add('active'); // Preparing
-                progressPercentage = '50%';
+                steps[1].classList.add('active'); // Activate "Preparing"
+                progressWidth = '50%';
             }
             if (status === 'Completed') {
-                stepIcons[2].classList.add('active'); // Ready for Pickup
-                progressPercentage = '100%';
+                steps[2].classList.add('active'); // Activate "Ready for Pickup"
+                progressWidth = '100%';
             }
             
-            // Animate the green progress bar line.
+            // --- CORRECTED: Animate the green progress bar line correctly ---
             if(progressBarLine) {
-                progressBarLine.style.width = progressPercentage;
+                progressBarLine.style.width = progressWidth;
             }
         }
 
-        // This is the main polling function.
+        // The main polling function - this part was correct.
         function pollOrderStatus() {
             fetch(`get_order_status.php?order_code=${orderCode}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.status && data.status !== 'Error' && data.status !== 'Not Found') {
-                        // If we get a valid status, update the UI.
+                    if (data && data.status && data.status !== 'Error' && data.status !== 'Not Found') {
                         updateOrderStatusUI(data.status);
                     }
                 })
                 .catch(error => console.error('Error polling for status:', error));
         }
 
-        // Start the polling!
-        // It will run the pollOrderStatus function every 10000 milliseconds (10 seconds).
+        // Start polling every 10 seconds.
         setInterval(pollOrderStatus, 10000);
 
-    })(); // End of self-executing function
+    })();
 </script>
 </body>
 </html>
