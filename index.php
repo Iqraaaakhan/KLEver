@@ -1,4 +1,8 @@
 <?php
+// THIS MUST BE THE VERY FIRST LINE OF THE FILE.
+// We only need to start the session once. The header will use this same session.
+session_start(); 
+
 // =======================================================
 //  DATABASE CONNECTION 
 // =======================================================
@@ -27,11 +31,10 @@ $specials_query = "SELECT * FROM menu_items WHERE is_special = 1 AND is_availabl
                         END 
                     LIMIT 6";
 $specials_result = $conn->query($specials_query);
-?>
-<?php
-session_start(); // Start the session to access session variables
 
-// Check for a flash message and prepare to display it.
+// =======================================================
+//  FLASH MESSAGE LOGIC
+// =======================================================
 $flash_message = '';
 if (isset($_SESSION['flash_message'])) {
     $flash_message = $_SESSION['flash_message'];
@@ -39,7 +42,6 @@ if (isset($_SESSION['flash_message'])) {
     unset($_SESSION['flash_message']);
 }
 ?>
-<?php include 'header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,25 +49,20 @@ if (isset($_SESSION['flash_message'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>KLEver – Smart Canteen Automation</title>
     
-    <!-- Google Fonts (Added 'Lora' for the elegant logo) -->
+    <!-- Your <link> tags for fonts and CSS go here -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Swiper.js for Carousel -->
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
-    <!-- Your Stylesheet -->
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-    <!-- The header now sits OUTSIDE the hero-section -->
-    <?php include 'header.php'; ?>
 
-    <!-- The hero-section is the first content element -->
+    <?php 
+    // THIS IS THE ONE AND ONLY PLACE THE HEADER SHOULD BE INCLUDED.
+    include 'header.php'; 
+    ?>
     <section class="hero-section">
 
   <div class="swiper-container hero-slider">

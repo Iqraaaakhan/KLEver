@@ -633,3 +633,70 @@ footer .social a:hover {
 .user-icon:hover {
     transform: scale(1.1);
 }
+/* ================================
+   HEADER ACTIONS (RIGHT SIDE) - FINAL FIX
+================================= */
+
+/* This new container will hold all the items on the right of the header */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* This creates the same space as your original 'margin-left' */
+}
+
+/* We style the logout link to look exactly like your other nav links */
+.logout-link {
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.logout-link:hover {
+  color: #E4C59E; /* Your theme's hover color */
+}
+
+/* We ensure the primary button keeps its original style */
+.header-actions .btn-primary {
+  background-color: #AF8260;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  color: white;
+  text-shadow: none;
+  transition: background-color 0.3s;
+}
+
+.header-actions .btn-primary:hover {
+  background-color: #803D3B;
+}
+
+/* The user icon styles, now correctly integrated */
+/* Final User Icon Style - it now inherits spacing from the rule above */
+.user-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: #AF8260; /* Inverted colors look more premium */
+    display: flex; /* This is needed for the flexbox alignment below */
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.2 rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-left: 1.5rem; /* This ensures it has the same spacing as other nav items */
+  }
+.user-icon:hover {
+    transform: scale(1.1);
+}
+
+.user-icon:hover {
+    transform: scale(1.1);
+}
+/* This new rule ensures all items inside the nav are perfectly aligned vertically */
+.main-header nav {
+    display: flex;
+    align-items: center;
+}

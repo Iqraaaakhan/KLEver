@@ -1,46 +1,44 @@
 <?php
-// This ensures we can access session variables on any page that includes this header.
-// The @ symbol is a small trick to prevent an error if a session is already started.
-@session_start();
+// The professional way: only start a session if one does not already exist.
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// --- PHP Logic Block ---
-// Here, we determine if the user is logged in and get their initial for the icon.
-
-// We start by assuming the user is a logged-out visitor
+// Set default values for when a user is logged out
 $is_logged_in = false;
 $user_initial = '';
 
-// Now, we check if the special session variables for a logged-in user exist
+// Check if the FINAL login session variables exist
 if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
-    // If they exist, the user IS logged in
     $is_logged_in = true;
-    // We grab the first letter of their username for the icon
     $user_initial = strtoupper(substr($_SESSION['username'], 0, 1));
 }
-// --- End of PHP Logic Block ---
 ?>
 
-<!-- This HTML structure is designed to work perfectly with your existing style.css -->
+<!-- This HTML is now structured EXACTLY as you specified -->
 <header class="main-header">
     <div class="container">
         <a href="index.php" class="logo">KLE<span>ver</span></a>
       
         <nav>
+            <!-- These are the static links -->
             <a href="index.php">Home</a>
             <a href="menu.php">Menu</a>
+
+            <!-- The "Order Now" button is now part of the nav flow for logged-in users -->
+            <a href="menu.php" class="btn-primary">Order Now</a>
+
             <a href="track_order.php">Track Order</a>
 
             <?php if ($is_logged_in): ?>
-                <!-- If the user IS logged in, we show these two items -->
+                <!-- If Logged In: Show Logout link and then the User Icon at the end -->
                 <a href="logout.php">Logout</a>
                 <div class="user-icon" title="Logged in as <?php echo htmlspecialchars($_SESSION['username']); ?>">
                     <?php echo htmlspecialchars($user_initial); ?>
                 </div>
-
             <?php else: ?>
-                <!-- If the user IS NOT logged in, we show these two items -->
+                <!-- If Logged Out: The "Login" link will appear here -->
                 <a href="login.php">Login</a>
-                <a href="menu.php" class="btn-primary">Order Now</a>
             <?php endif; ?>
         </nav>
     </div>
