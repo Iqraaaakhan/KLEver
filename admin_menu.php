@@ -67,8 +67,8 @@ $products_result = $conn->query("SELECT * FROM products ORDER BY is_active DESC,
                                 <!-- THIS IS THE NEW LOGIC: We show different buttons based on the item's status -->
                                 <?php if ($product['is_active']): ?>
                                     <!-- If active, show Edit and Delete buttons -->
-                                    <a href="admin_edit_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                                    <a href="admin_delete_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to mark this item as inactive?');"><i class="fas fa-trash"></i> Delete</a>
+                                <a href="admin_edit_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>                                    
+                                <a href="admin_delete_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to mark this item as inactive?');"><i class="fas fa-trash"></i> Delete</a>
                                 <?php else: ?>
                                     <!-- If inactive, show a Restore button -->
                                     <a href="admin_restore_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-restore"><i class="fas fa-undo"></i> Restore</a>
