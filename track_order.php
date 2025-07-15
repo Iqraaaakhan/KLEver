@@ -177,5 +177,73 @@ $conn->close();
         </div>
     </div>
 <?php include 'footer.php'; ?>
+// Find the </body> tag at the end of track_order.php
+// And add this ENTIRE <script> block right before it.
+
+<script>
+    // This self-executing function will contain all our logic to avoid conflicts.
+    (function() {
+        // Find the elements on the page we need to interact with.
+        const orderResultBox = document.querySelector('.order-result');
+        const progressBarLine = document.querySelector('.progress-line');
+        const stepIcons = document.querySelectorAll('.step'); // Get all three steps
+
+        // If there's no order result box on the page, do nothing.
+        if (!orderResultBox) {
+            return;
+        }
+
+        // Get the current order code from the h3 tag.
+        const orderCodeElement = orderResultBox.querySelector('h3');
+        const orderCode = orderCodeElement ? orderCodeElement.textContent.replace('Order #', '').trim() : null;
+
+        if (!orderCode) {
+            return;
+        }
+
+        // This function updates the UI based on the new status.
+        function updateOrderStatusUI(status) {
+            let progressPercentage = '0%';
+            // De-activate all steps first
+            stepIcons.forEach(step => step.classList.remove('active'));
+
+            // Activate steps based on the status
+            if (status === 'Pending' || status === 'Preparing' || status === 'Completed') {
+                stepIcons[0].classList.add('active'); // Order Placed
+            }
+            if (status === 'Preparing' || status === 'Completed') {
+                stepIcons[1].classList.add('active'); // Preparing
+                progressPercentage = '50%';
+            }
+            if (status === 'Completed') {
+                stepIcons[2].classList.add('active'); // Ready for Pickup
+                progressPercentage = '100%';
+            }
+            
+            // Animate the green progress bar line.
+            if(progressBarLine) {
+                progressBarLine.style.width = progressPercentage;
+            }
+        }
+
+        // This is the main polling function.
+        function pollOrderStatus() {
+            fetch(`get_order_status.php?order_code=${orderCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status && data.status !== 'Error' && data.status !== 'Not Found') {
+                        // If we get a valid status, update the UI.
+                        updateOrderStatusUI(data.status);
+                    }
+                })
+                .catch(error => console.error('Error polling for status:', error));
+        }
+
+        // Start the polling!
+        // It will run the pollOrderStatus function every 10000 milliseconds (10 seconds).
+        setInterval(pollOrderStatus, 10000);
+
+    })(); // End of self-executing function
+</script>
 </body>
 </html>
