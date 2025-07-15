@@ -140,15 +140,7 @@ if (isset($_SESSION['flash_message'])) {
     </div>
   </section>
 
-  <footer>
-    <div class="container">
-        <p>© <?php echo date("Y"); ?> KLEver Canteen Automation • Contact: +91‑12345‑67890 • vidyanagar, Hubballi</p>
-        <div class="social">
-            <a href="#">Facebook</a> • 
-            <a href="#">Instagram</a>
-        </div>
-    </div>
-  </footer>
+<?php include 'footer.php'; ?>
   
   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
   <script>

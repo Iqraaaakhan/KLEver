@@ -198,7 +198,7 @@ $menu_result = $conn->query($menu_query);
   <div id="summary"></div>
   <div class="total" id="total">Total: ₹0</div>
 </div>
-
+<?php include 'footer.php'; ?>
 <script>
   const items = <?php echo json_encode($menuItemsJS); ?>;
 
