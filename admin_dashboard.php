@@ -89,5 +89,63 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
         </table>
     </div>
 </div>
+
+<script>
+    // This function will run every 15 seconds to check for new orders.
+    function checkForNewOrders() {
+        // Find the very first order row in the table.
+        const firstOrderRow = document.querySelector('tbody tr');
+        
+        // If there are no orders on the page yet, we can't check for new ones.
+        if (!firstOrderRow) {
+            return; 
+        }
+
+        // Get the ID of the latest order currently displayed on the page.
+        // We will store this in a hidden input field inside the form.
+        const latestOrderId = firstOrderRow.querySelector('input[name="order_id"]').value;
+        
+        // Call our new PHP script in the background.
+        fetch(`admin_check_orders.php?last_id=${latestOrderId}`)
+            .then(response => response.json())
+            .then(data => {
+                // The PHP script sends back { "new_order": true } or { "new_order": false }
+                if (data.new_order) {
+                    // --- A NEW ORDER HAS ARRIVED! ---
+                    
+                    // 1. Play the notification sound.
+                    const notificationSound = new Audio('assets/notification.mp3');
+                    notificationSound.play();
+                    
+                    // 2. Display a prominent banner at the top of the page.
+                    showNewOrderBanner();
+                }
+            })
+            .catch(error => console.error('Error checking for new orders:', error));
+    }
+
+    // This function creates and shows the "New Order!" banner.
+    function showNewOrderBanner() {
+        // Check if a banner already exists to avoid creating multiple.
+        if (document.querySelector('.new-order-banner')) {
+            return;
+        }
+
+        const banner = document.createElement('div');
+        banner.className = 'new-order-banner';
+        banner.innerHTML = `
+            <i class="fas fa-bell"></i>
+            <strong>New Order Received!</strong>
+            <a href="admin_dashboard.php">Click here to refresh the page</a>
+        `;
+        
+        // Add the banner to the top of the main content area.
+        const mainContent = document.querySelector('.main-content');
+        mainContent.insertBefore(banner, mainContent.firstChild);
+    }
+
+    // This is the main timer. It calls the checkForNewOrders function every 15000 milliseconds (15 seconds).
+    setInterval(checkForNewOrders, 15000);
+</script>
 </body>
 </html>

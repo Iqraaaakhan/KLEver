@@ -90,3 +90,36 @@
     background-color: #28a745; /* A nice green for a positive action */
     color: white;
 }
+/* Add these styles to the end of admin_dashboard_styles.css */
+
+.new-order-banner {
+    background-color: #28a745; /* A nice, attention-grabbing green */
+    color: white;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    animation: fadeInDown 0.5s ease;
+}
+
+.new-order-banner a {
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* A simple animation for the banner appearing */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
