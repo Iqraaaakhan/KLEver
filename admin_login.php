@@ -1,7 +1,8 @@
-<?php // admin_login.php
+<?php
+// This MUST be the very first line to access session data.
 session_start();
 
-// If the admin is already logged in, send them straight to the dashboard
+// If an admin is already logged in, redirect them immediately to the dashboard.
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
     header("Location: admin_dashboard.php");
     exit;
@@ -9,36 +10,52 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
 $message = "";
 
-// This code runs when the admin submits the login form
+// This code runs when the form is submitted.
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // --- Connect to your one true database ---
+    // --- 1. Connect to your database ---
     $conn = new mysqli('localhost', 'root', '', 'klever_db');
-    if ($conn->connect_error) { die("Connection failed"); }
+    if ($conn->connect_error) { 
+        die("Database connection failed: " . $conn->connect_error); 
+    }
 
-    // --- We will use the hardcoded admin user for now for simplicity ---
-    // In a bigger project, you would query the 'user' table where type=1
-    define('ADMIN_USER', 'admin');
-    define('ADMIN_PASS', 'password123'); // This is the password from your 'user' table
-
+    // --- 2. Get the submitted username and password ---
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // --- Check if the login details are correct ---
-    if ($username === ADMIN_USER && $password === ADMIN_PASS) {
-        // If correct, set the session variable to mark them as a logged-in admin
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_username'] = $username;
-        // Redirect to the dashboard
-        header("Location: admin_dashboard.php");
-        exit;
-    } else {
-        $message = "Invalid Admin Credentials.";
+    // --- 3. Find the admin user in the database ---
+    $stmt = $conn->prepare("SELECT * FROM user WHERE username = ? AND type = 1");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // --- 4. Check if we found exactly one admin user ---
+    if ($result->num_rows == 1) {
+        $admin_user = $result->fetch_assoc();
+        
+        // --- 5. Verify the hashed password ---
+        if (password_verify($password, $admin_user['password'])) {
+            // --- SUCCESS! The password is correct. ---
+            
+            // Set the session variables to mark the admin as logged in.
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_username'] = $admin_user['username'];
+            
+            // Redirect them to the dashboard.
+            header("Location: admin_dashboard.php");
+            exit;
+        }
     }
+    
+    // --- FAILURE: If the username was not found or the password was wrong. ---
+    $message = "Invalid Admin Credentials.";
+    
+    $stmt->close();
     $conn->close();
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<!-- Your HTML and UI are completely unchanged -->
 <head>
   <meta charset="UTF-8">
   <title>Admin Login - KLEver</title>
@@ -60,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <p>Please log in to manage the canteen.</p>
     <?php if ($message) echo "<p class='error'>$message</p>"; ?>
     <form method="POST" action="admin_login.php">
-      <input type="text" name="username" placeholder="Username" required>
+      <input type="text" name="username" placeholder="Username" required value="admin">
       <input type="password" name="password" placeholder="Password" required>
       <button type="submit">Login</button>
     </form>

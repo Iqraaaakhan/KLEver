@@ -85,18 +85,21 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
                         <td><strong><?php echo $order['order_code']; ?></strong></td>
                         <td><?php echo htmlspecialchars($order['name']); ?></td>
                         <td>
-                            <ul>
-                            <?php 
-                                // Decode the JSON details into a readable list
-                                $items = json_decode($order['order_details'], true);
-                                if (is_array($items)) {
-                                    foreach($items as $item) {
-                                        echo "<li>" . htmlspecialchars($item['name']) . " x " . $item['quantity'] . "</li>";
-                                    }
-                                }
-                            ?>
-                            </ul>
-                        </td>
+    <ul>
+    <?php 
+        // Create a new prepared statement to fetch items for THIS specific order
+        $stmt_items = $conn->prepare("SELECT item_name, quantity FROM order_items WHERE order_id = ?");
+        $stmt_items->bind_param("i", $order['id']);
+        $stmt_items->execute();
+        $items_result = $stmt_items->get_result();
+        
+        while ($item = $items_result->fetch_assoc()) {
+            echo "<li>" . htmlspecialchars($item['item_name']) . " x " . $item['quantity'] . "</li>";
+        }
+        $stmt_items->close();
+    ?>
+    </ul>
+</td>
                         <td>₹<?php echo number_format($order['total'], 2); ?></td>
                         <td><?php echo date("g:i a, d M", strtotime($order['order_time'])); ?></td>
                         <td class="status-<?php echo strtolower($order['status']); ?>"><?php echo $order['status']; ?></td>

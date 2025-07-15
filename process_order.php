@@ -1,49 +1,92 @@
-<?php // process_order.php - ROBUST VERSION
+<?php
+session_start();
 
-// --- These two lines are for debugging ONLY. They force PHP to show all errors.
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// --- THIS IS THE NEW, CRITICAL BLOCK TO READ JSON DATA ---
+// Get the raw JSON data sent from the JavaScript fetch()
+$json_data = file_get_contents('php://input');
+// Decode the JSON string into a PHP object
+$order_data = json_decode($json_data);
 
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json");
+// Now, we check if the data was decoded correctly.
+if (!$order_data) {
+    // If the data is bad, we stop immediately.
+    http_response_code(400); // Bad Request
+    echo json_encode(['success' => false, 'message' => 'Invalid order data received.']);
+    exit;
+}
+// --- END OF NEW BLOCK ---
 
-// --- Use your one correct database ---
-$host = 'localhost';
-$user = 'root';
-$pass = '';
-$dbname = 'klever_db'; 
-
-$conn = new mysqli($host, $user, $pass, $dbname);
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Database Connection Failed: " . $conn->connect_error]);
+// Ensure the user is logged in (this is good for security)
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(403); // Forbidden
+    echo json_encode(['success' => false, 'message' => 'User not logged in.']);
     exit;
 }
 
-$data = json_decode(file_get_contents("php://input"), true);
-
-if (empty($data['name']) || empty($data['email']) || empty($data['payment']) || empty($data['items']) || !isset($data['total'])) {
-    echo json_encode(["success" => false, "message" => "Invalid data sent from cart. Please fill all fields."]);
-    exit;
+// Connect to the database
+$conn = new mysqli('localhost', 'root', '', 'klever_db');
+if ($conn->connect_error) { 
+    http_response_code(500); // Server Error
+    echo json_encode(['success' => false, 'message' => 'Database connection failed.']);
+    exit; 
 }
 
-// Sanitize the data
-$name = $conn->real_escape_string($data['name']);
-$email = $conn->real_escape_string($data['email']);
-$payment = $conn->real_escape_string($data['payment']);
-$order_details_json = json_encode($data['items']);
-$total = floatval($data['total']);
-$order_code = 'KLE-' . rand(1000, 9999);
+// Start a Database Transaction
+$conn->begin_transaction();
 
-// Prepare the SQL query
-$sql = "INSERT INTO orders (order_code, name, email, payment_method, order_details, total)
-        VALUES ('$order_code', '$name', '$email', '$payment', '$order_details_json', $total)";
+try {
+    // Get the data from the DECODED JSON object, not $_POST
+    $name = $order_data->name;
+    $email = $order_data->email;
+    $payment_method = $order_data->payment; // Your JS sends it as 'payment'
+    $total_price = $order_data->total;
+    $order_items_from_js = $order_data->items; // This is the array of items
 
-// Execute the query AND check for errors
-if ($conn->query($sql) === TRUE) {
-    echo json_encode(["success" => true, "order_code" => $order_code]);
-} else {
-    // THIS IS THE CRITICAL PART: Tell the front-end EXACTLY what the database error is.
-    echo json_encode(["success" => false, "message" => "Database Error: " . $conn->error]);
+    $order_code = 'KLE-' . rand(1000, 9999);
+
+    // Save the Main Order to the `orders` table
+    $stmt_order = $conn->prepare(
+        "INSERT INTO orders (order_code, name, email, payment_method, total, status) VALUES (?, ?, ?, ?, ?, 'Pending')"
+    );
+    $stmt_order->bind_param("ssssd", $order_code, $name, $email, $payment_method, $total_price);
+    $stmt_order->execute();
+
+    // Get the ID of the New Order
+    $new_order_id = $conn->insert_id;
+
+    // Prepare and Save Each Item to the `order_items` table
+    $stmt_items = $conn->prepare(
+        "INSERT INTO order_items (order_id, item_id, item_name, quantity, price_per_item) VALUES (?, ?, ?, ?, ?)"
+    );
+
+    // The corrected block
+foreach ($order_items_from_js as $item) {
+    // We assume your JS item object has 'id', 'name', 'quantity', and 'cost' properties
+    
+    // THIS IS THE FIX: We split the string 'item_14' by the underscore '_'
+    // and take the second part [1], which is the number. (int) ensures it's an integer.
+    $item_id = (int)explode('_', $item->id)[1]; 
+
+    $item_name = $item->name;
+    $quantity = $item->quantity;
+    $price = $item->cost / $item->quantity; // Calculate price per item
+    
+    $stmt_items->bind_param("isssd", $new_order_id, $item_id, $item_name, $quantity, $price);
+    $stmt_items->execute();
+}
+    // If everything succeeded, commit the transaction
+    $conn->commit();
+    
+    // Send a SUCCESS response back to the JavaScript
+    echo json_encode(['success' => true, 'order_code' => $order_code]);
+
+} catch (Exception $e) {
+    // If any error occurred, roll back the transaction
+    $conn->rollback();
+    
+    // Send a FAILURE response back to the JavaScript with the error message
+    http_response_code(500); // Server Error
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
 
 $conn->close();
