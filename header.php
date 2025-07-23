@@ -28,14 +28,16 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
             <!-- The "Order Now" button is now part of the nav flow for logged-in users -->
             <a href="menu.php" class="btn-primary">Order Now</a>
 
-            <a href="track_order.php">Track Order</a>
+      <!--  <a href="track_order.php">Track Order</a>  -->
 
-            <?php if ($is_logged_in): ?>
-                <!-- If Logged In: Show Logout link and then the User Icon at the end -->
-                <a href="logout.php">Logout</a>
-                <div class="user-icon" title="Logged in as <?php echo htmlspecialchars($_SESSION['username']); ?>">
-                    <?php echo htmlspecialchars($user_initial); ?>
-                </div>
+<?php if ($is_logged_in): ?>
+    <!-- START: ADD THIS NEW LINE -->
+    <a href="my_orders.php">My Orders</a>
+    <!-- END: ADD THIS NEW LINE -->
+    <a href="logout.php">Logout</a>
+    <div class="user-icon" title="Logged in as <?php echo htmlspecialchars($_SESSION['username']); ?>">
+        <?php echo htmlspecialchars($user_initial); ?>
+    </div>
             <?php else: ?>
                 <!-- If Logged Out: The "Login" link will appear here -->
                 <a href="login.php">Login</a>

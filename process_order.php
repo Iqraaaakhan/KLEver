@@ -45,10 +45,15 @@ try {
     $order_code = 'KLE-' . rand(1000, 9999);
 
     // Save the Main Order to the `orders` table
-    $stmt_order = $conn->prepare(
-        "INSERT INTO orders (order_code, name, email, payment_method, total, status) VALUES (?, ?, ?, ?, ?, 'Pending')"
-    );
-    $stmt_order->bind_param("ssssd", $order_code, $name, $email, $payment_method, $total_price);
+   // Get the logged-in user's ID from the session
+$user_id = $_SESSION['user_id'];
+
+// Save the Main Order to the `orders` table, now including the user_id
+$stmt_order = $conn->prepare(
+    "INSERT INTO orders (user_id, order_code, name, email, payment_method, total, status) VALUES (?, ?, ?, ?, ?, ?, 'Pending')"
+);
+// The bind_param string is updated from "ssssd" to "issssd" to include the new integer user_id
+$stmt_order->bind_param("issssd", $user_id, $order_code, $name, $email, $payment_method, $total_price);
     $stmt_order->execute();
 
     // Get the ID of the New Order
