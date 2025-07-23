@@ -123,3 +123,94 @@
         transform: translateY(0);
     }
 }
+/* --- ADMIN DASHBOARD ANALYTICS CARDS --- */
+.stat-cards-container {
+    display: grid;
+    /* This is the key to responsiveness: it creates as many columns as can fit (min 200px) */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.09);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    color: #fff;
+}
+
+/* Unique colors for each card for better visual distinction */
+.stat-icon.sales { background-color: #28a745; } /* Green */
+.stat-icon.orders { background-color: #007bff; } /* Blue */
+.stat-icon.top-item { background-color: #ffc107; } /* Yellow */
+.stat-icon.users { background-color: #17a2b8; } /* Teal */
+
+.stat-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.stat-info h3 {
+    margin: 0.25rem 0 0 0;
+    color: #343a40;
+    font-size: 1.75rem;
+}
+/* --- ADMIN REPORTS PAGE STYLES --- */
+.reports-grid {
+    display: grid;
+    /* Responsive Grid: On large screens, two columns. On small screens, they stack. */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.report-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.report-card h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #322C2B;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.75rem;
+}
+
+.chart-container {
+    /* We need to give the chart container a height */
+    height: 400px; 
+}
+
+.top-customers-list table {
+    box-shadow: none; /* Remove the double shadow */
+}
+
+.top-customers-list th {
+    background-color: #f8f9fa; /* A lighter header for this internal table */
+    color: #333;
+}

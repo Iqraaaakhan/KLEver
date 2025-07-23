@@ -16,6 +16,40 @@ if ($conn->connect_error) {
 
 // Line 16: Fetch all orders from the database, showing the newest ones at the top.
 $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
+
+// --- START: ADD THIS ENTIRE NEW ANALYTICS BLOCK ---
+
+// Get today's date in 'YYYY-MM-DD' format from PHP. This is timezone-safe.
+$today_date = date('Y-m-d');
+
+// METRIC 1: Total Sales for Today (using a secure prepared statement)
+$stmt_sales = $conn->prepare("SELECT SUM(total) as total_sales FROM orders WHERE DATE(order_time) = ?");
+$stmt_sales->bind_param("s", $today_date);
+$stmt_sales->execute();
+$sales_today = $stmt_sales->get_result()->fetch_assoc()['total_sales'] ?? 0;
+
+// METRIC 2: Number of Orders Today (using a secure prepared statement)
+$stmt_orders = $conn->prepare("SELECT COUNT(id) as order_count FROM orders WHERE DATE(order_time) = ?");
+$stmt_orders->bind_param("s", $today_date);
+$stmt_orders->execute();
+$orders_today = $stmt_orders->get_result()->fetch_assoc()['order_count'] ?? 0;
+
+// METRIC 3: Top Selling Item (Most frequently ordered)
+$top_item_result = $conn->query(
+    "SELECT item_name, SUM(quantity) as total_quantity 
+     FROM order_items 
+     GROUP BY item_name 
+     ORDER BY total_quantity DESC 
+     LIMIT 1"
+);
+$top_item = $top_item_result->fetch_assoc()['item_name'] ?? 'N/A';
+
+// METRIC 4: Total Registered Users (excluding admin)
+$total_users_result = $conn->query("SELECT COUNT(id) as user_count FROM user WHERE type != 1");
+$total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
+
+// --- END: ADD THIS ENTIRE NEW ANALYTICS BLOCK ---
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,10 +65,52 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
 <div class="admin-wrapper">
    <?php include 'admin_sidebar.php'; ?>
     <!-- The Main Content Area for the Order List -->
-    <div class="main-content">
-        <h1>Dashboard</h1>
-        <h2>Recent Orders</h2>
-        <table>
+   <div class="main-content">
+    <h1>Dashboard</h1>
+
+    <!-- START: ADD THIS ENTIRE NEW HTML SECTION -->
+    <div class="stat-cards-container">
+        <div class="stat-card">
+            <div class="stat-icon sales">
+                <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="stat-info">
+                <p>Sales Today</p>
+                <h3>₹<?php echo number_format($sales_today, 2); ?></h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orders">
+                <i class="fas fa-receipt"></i>
+            </div>
+            <div class="stat-info">
+                <p>Orders Today</p>
+                <h3><?php echo $orders_today; ?></h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon top-item">
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-info">
+                <p>Top Selling Item</p>
+                <h3><?php echo htmlspecialchars($top_item); ?></h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon users">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <p>Total Users</p>
+                <h3><?php echo $total_users; ?></h3>
+            </div>
+        </div>
+    </div>
+    <!-- END: ADD THIS ENTIRE NEW HTML SECTION -->
+
+    <h2>Recent Orders</h2>
+    <table>
             <thead>
                 <tr>
                     <th>Order Code</th><th>Customer</th><th>Items</th><th>Total</th><th>Time</th><th>Status</th><th>Action</th>

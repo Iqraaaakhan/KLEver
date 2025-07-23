@@ -9,6 +9,8 @@
         <li class="<?php if($current_page == 'admin_users.php') echo 'active'; ?>"><a href="admin_users.php"><i class="fas fa-users"></i>Users</a></li>
     </ul>
     <ul class="sidebar-nav logout-link">
+          <li class="<?php if($current_page == 'admin_reports.php') echo 'active'; ?>"><a href="admin_reports.php"><i class="fas fa-chart-line"></i>Reports</a></li>
          <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+         
     </ul>
 </div>
