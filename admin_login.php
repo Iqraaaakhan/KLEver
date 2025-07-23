@@ -1,8 +1,6 @@
 <?php
-// This MUST be the very first line to access session data.
 session_start();
 
-// If an admin is already logged in, redirect them immediately to the dashboard.
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
     header("Location: admin_dashboard.php");
     exit;
@@ -10,52 +8,38 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 
 $message = "";
 
-// This code runs when the form is submitted.
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // --- 1. Connect to your database ---
     $conn = new mysqli('localhost', 'root', '', 'klever_db');
     if ($conn->connect_error) { 
         die("Database connection failed: " . $conn->connect_error); 
     }
 
-    // --- 2. Get the submitted username and password ---
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // --- 3. Find the admin user in the database ---
     $stmt = $conn->prepare("SELECT * FROM user WHERE username = ? AND type = 1");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // --- 4. Check if we found exactly one admin user ---
     if ($result->num_rows == 1) {
         $admin_user = $result->fetch_assoc();
-        
-        // --- 5. Verify the hashed password ---
         if (password_verify($password, $admin_user['password'])) {
-            // --- SUCCESS! The password is correct. ---
-            
-            // Set the session variables to mark the admin as logged in.
             $_SESSION['admin_logged_in'] = true;
             $_SESSION['admin_username'] = $admin_user['username'];
-            
-            // Redirect them to the dashboard.
             header("Location: admin_dashboard.php");
             exit;
         }
     }
     
-    // --- FAILURE: If the username was not found or the password was wrong. ---
     $message = "Invalid Admin Credentials.";
-    
     $stmt->close();
     $conn->close();
 }
 ?>
+<!-- The original HTML for the login form -->
 <!DOCTYPE html>
 <html lang="en">
-<!-- Your HTML and UI are completely unchanged -->
 <head>
   <meta charset="UTF-8">
   <title>Admin Login - KLEver</title>

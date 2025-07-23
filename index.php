@@ -18,6 +18,7 @@ if ($conn->connect_error) {
 // =======================================================
 //  FETCH SPECIALS QUERY
 // =======================================================
+/*
 $specials_query = "SELECT * FROM products WHERE is_featured = 1 AND is_available = 1 
                     ORDER BY 
                         CASE 
@@ -29,6 +30,11 @@ $specials_query = "SELECT * FROM products WHERE is_featured = 1 AND is_available
                             WHEN name = 'Puri Bhaji'          THEN 5 
                             ELSE 99 
                         END 
+                    LIMIT 6";
+*/
+// This is the new, truly dynamic query
+$specials_query = "SELECT * FROM products WHERE is_featured = 1 AND is_available = 1 
+                    ORDER BY RAND() 
                     LIMIT 6";
 $specials_result = $conn->query($specials_query);
 

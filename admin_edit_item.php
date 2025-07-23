@@ -85,7 +85,7 @@ $stmt->close();
                 </div>
                 <div class="form-group">
                     <label for="image_url">Image URL</label>
-                    <input type="url" id="image_url" name="image_url" value="<?php echo htmlspecialchars($product['image_url']); ?>" required>
+                    <input type="text" id="image_url" name="image_url" value="<?php echo htmlspecialchars($product['image_url']); ?>" required>
                 </div>
                 <div class="form-group">
                     <label for="is_available">Status</label>
