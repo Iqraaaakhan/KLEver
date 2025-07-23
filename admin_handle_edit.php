@@ -1,56 +1,56 @@
 <?php
 session_start();
 
-// Security Check: Only admins can perform this action.
+// Security Check: Ensure an admin is logged in.
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header("Location: admin_login.php");
     exit;
 }
 
-// Check if the form was submitted using the POST method.
+// Ensure the form was submitted via POST.
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // 1. Connect to the database.
+
+    // 1. DATABASE CONNECTION
     $conn = new mysqli('localhost', 'root', '', 'klever_db');
-    if ($conn->connect_error) { 
-        die("Connection Failed: " . $conn->connect_error); 
+    if ($conn->connect_error) {
+        die("Connection Failed: " . $conn->connect_error);
     }
 
-    // 2. Get ALL FIVE values from the form, including the hidden ID.
+    // 2. GET DATA FROM THE FORM
+    // These names match your form's 'name' attributes exactly.
     $id = $_POST['id'];
     $name = $_POST['name'];
     $price = $_POST['price'];
     $image_url = $_POST['image_url'];
-    $is_available = $_POST['is_available']; // The missing value
-    $is_featured = $_POST['is_featured'];   // The other missing value
+    $is_available = $_POST['is_available']; // Reads '1' or '0'
+    $is_featured = $_POST['is_featured'];   // Reads '1' or '0'
 
-    // 3. Prepare the new, complete, and secure UPDATE statement.
-    // This query now includes is_available and is_featured.
+    // NOTE: We do NOT touch 'is_active' here. That is handled by Delete/Restore.
+
+    // 3. PREPARE AND EXECUTE THE DATABASE UPDATE
     $stmt = $conn->prepare(
-        "UPDATE products 
-         SET name = ?, price = ?, image_url = ?, is_available = ?, is_featured = ? 
-         WHERE id = ?"
+        "UPDATE products SET name = ?, price = ?, image_url = ?, is_available = ?, is_featured = ? WHERE id = ?"
     );
     
-    // 4. Bind the parameters with the new, correct type string: 'sdsiii'
-    // s = string, d = double/decimal, i = integer
+    // Bind the variables to the query
     $stmt->bind_param("sdsiii", $name, $price, $image_url, $is_available, $is_featured, $id);
 
-    // 5. Execute the statement and check for success.
+    // Execute the query and set a feedback message
     if ($stmt->execute()) {
-        // Success! Redirect back to the menu management page to see the changes.
-        header("Location: admin_menu.php");
-        exit;
+        $_SESSION['flash_message'] = "Item '" . htmlspecialchars($name) . "' updated successfully!";
     } else {
-        // If it fails, show an error.
-        echo "Error updating record: " . $stmt->error;
+        $_SESSION['flash_message'] = "Error updating item: " . $stmt->error;
     }
 
+    // 4. CLEAN UP AND REDIRECT
     $stmt->close();
     $conn->close();
 
+    header("Location: admin_menu.php");
+    exit;
+
 } else {
-    // If someone tries to access this page directly, redirect them away.
+    // Redirect if the page is accessed directly.
     header("Location: admin_menu.php");
     exit;
 }

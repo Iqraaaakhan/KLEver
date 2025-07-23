@@ -1,4 +1,4 @@
-<?php // menu.php - NEW SEARCH-AWARE VERSION
+<?php // menu.php - FINAL CORRECTED VERSION
 
 // =======================================
 // DATABASE CONNECTION
@@ -13,21 +13,22 @@ if ($conn->connect_error) {
 }
 
 // =======================================
-// FETCH MENU ITEMS (WITH SEARCH LOGIC)
+// FETCH MENU ITEMS (WITH CORRECTED LOGIC)
 // =======================================
 $search_term = '';
-// Check if a search query has been sent via the form
+// This is the base query. It is now correct for ALL cases.
+$menu_query = "SELECT * FROM products WHERE is_available = 1 AND is_active = 1";
+
+// Check if a search query has been sent
 if (isset($_GET['search_query']) && !empty($_GET['search_query'])) {
     $search_term = $conn->real_escape_string($_GET['search_query']);
-    // The '%' are wildcards, so 'biryani' matches 'veg biryani', 'chicken biryani', etc.
-$menu_query = "SELECT * FROM products WHERE is_available = 1 AND is_active = 1 AND name LIKE '%$search_term%'";} else {
-    // If no search, get all items
-    $menu_query = "SELECT * FROM products WHERE is_available = 1";
-   $menu_query = "SELECT * FROM products WHERE is_active = 1 "; // This ensures we only show active items
+    // If there is a search term, we simply ADD the search condition to the end.
+    $menu_query .= " AND name LIKE '%$search_term%'";
 }
+
+// Now the query is always correct, whether there is a search or not.
 $menu_result = $conn->query($menu_query);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

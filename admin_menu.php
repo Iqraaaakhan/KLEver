@@ -11,13 +11,12 @@ if ($conn->connect_error) {
     die("Connection Failed: " . $conn->connect_error); 
 }
 
-// THIS IS THE KEY CHANGE: We now fetch ALL products, so we can style them differently.
+// This query from your code is correct. It sorts by active status first.
 $products_result = $conn->query("SELECT * FROM products ORDER BY is_active DESC, name ASC");
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Your head content is perfect, no changes needed -->
   <meta charset="UTF-8">
   <title>Menu Management - KLEver Admin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,26 +50,32 @@ $products_result = $conn->query("SELECT * FROM products ORDER BY is_active DESC,
             <tbody>
                 <?php if ($products_result->num_rows > 0): ?>
                     <?php while($product = $products_result->fetch_assoc()): ?>
-                        <!-- THIS IS THE NEW LOGIC: We add a class to the row if the item is inactive -->
                         <tr class="<?php echo ($product['is_active'] == 0) ? 'inactive-row' : ''; ?>">
                             <td><img src="<?php echo htmlspecialchars($product['image_url']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="item-image"></td>
                             <td><strong><?php echo htmlspecialchars($product['name']); ?></strong></td>
                             <td>₹<?php echo number_format($product['price'], 2); ?></td>
                             <td>
-                                <?php if ($product['is_active']): ?>
-                                    <span class="status-available">Available</span>
-                                <?php else: ?>
-                                    <span class="status-unavailable">Inactive</span>
-                                <?php endif; ?>
+                                <!-- THIS IS THE NEW, COMBINED STATUS LOGIC -->
+                                <?php
+                                    if ($product['is_active'] == 1) {
+                                        // If the item is Active, check if it's Available for today.
+                                        if ($product['is_available'] == 1) {
+                                            echo '<span class="status-available">Available</span>';
+                                        } else {
+                                            echo '<span class="status-unavailable">Unavailable</span>';
+                                        }
+                                    } else {
+                                        // If the item is not Active, it's considered Inactive.
+                                        echo '<span class="status-inactive">Inactive</span>';
+                                    }
+                                ?>
                             </td>
                             <td class="actions">
-                                <!-- THIS IS THE NEW LOGIC: We show different buttons based on the item's status -->
+                                <!-- YOUR BUTTON LOGIC IS PERFECT AND IS PRESERVED HERE -->
                                 <?php if ($product['is_active']): ?>
-                                    <!-- If active, show Edit and Delete buttons -->
-                                <a href="admin_edit_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>                                    
-                                <a href="admin_delete_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to mark this item as inactive?');"><i class="fas fa-trash"></i> Delete</a>
+                                    <a href="admin_edit_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</a>                                    
+                                    <a href="admin_delete_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to mark this item as inactive?');"><i class="fas fa-trash"></i> Delete</a>
                                 <?php else: ?>
-                                    <!-- If inactive, show a Restore button -->
                                     <a href="admin_restore_item.php?id=<?php echo $product['id']; ?>" class="btn-action btn-restore"><i class="fas fa-undo"></i> Restore</a>
                                 <?php endif; ?>
                             </td>
