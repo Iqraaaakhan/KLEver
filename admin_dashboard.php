@@ -30,7 +30,7 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
 <body>
 <div class="admin-wrapper">
    <?php include 'admin_sidebar.php'; ?>
-    <!-- Line 73: The Main Content Area for the Order List -->
+    <!-- The Main Content Area for the Order List -->
     <div class="main-content">
         <h1>Dashboard</h1>
         <h2>Recent Orders</h2>
@@ -41,13 +41,16 @@ $orders_result = $conn->query("SELECT * FROM orders ORDER BY order_time DESC");
                 </tr>
             </thead>
             <tbody>
-                <!-- Line 82: Check if there are any orders -->
+                <!-- Line: Check if there are any orders -->
                 <?php if ($orders_result->num_rows > 0): ?>
-                    <!-- Line 84: Loop through each order and display it as a table row -->
+                    <!-- Line: Loop through each order and display it as a table row -->
                     <?php while($order = $orders_result->fetch_assoc()): ?>
                     <tr>
-                        <td><strong><?php echo $order['order_code']; ?></strong></td>
-                        <td><?php echo htmlspecialchars($order['name']); ?></td>
+<td>
+    <a href="admin_order_details.php?id=<?php echo $order['id']; ?>" style="font-weight:bold; text-decoration:underline; color:#322C2B;">
+        <?php echo htmlspecialchars($order['order_code']); ?>
+    </a>
+</td>                        <td><?php echo htmlspecialchars($order['name']); ?></td>
                         <td>
     <ul>
     <?php 
