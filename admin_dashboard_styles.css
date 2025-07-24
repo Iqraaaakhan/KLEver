@@ -232,3 +232,20 @@
 .new-order-row {
     animation: fadeIn 1.5s ease-out;
 }
+/* --- REAL-TIME ORDER ROW HIGHLIGHT ANIMATION --- */
+@keyframes fadeInHighlight {
+    0% {
+        background-color: #d4edda; /* Start with a light green highlight */
+    }
+    80% {
+        background-color: #d4edda; /* Hold the highlight for most of the duration */
+    }
+    100% {
+        background-color: transparent; /* Fade back to the normal transparent background */
+    }
+}
+
+/* Apply the animation to the new row class from your PHP script */
+.new-order-row-animation {
+    animation: fadeInHighlight 3s ease-out;
+}

@@ -65,13 +65,12 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
    <?php include 'admin_sidebar.php'; ?>
     <!-- The Main Content Area for the Order List -->
    <div class="main-content">
-    <!-- START: ADD THIS BANNER HTML -->
-    <div class="new-order-banner" id="newOrderBanner" style="display: none;">
-        <i class="fas fa-bell"></i>
-        <strong>New Order Received!</strong>
-        <a href="admin_dashboard.php">Click here to refresh and see all updates</a>
-    </div>
-    <!-- END: ADD THIS BANNER HTML -->
+   <!-- START: DYNAMIC BANNER HTML -->
+<div class="new-order-banner" id="newOrderBanner" style="display: none;">
+    <i class="fas fa-bell"></i>
+    <span id="newOrderMessage"></span> <!-- Placeholder for our dynamic message -->
+</div>
+<!-- END: DYNAMIC BANNER HTML -->
 
     <h1>Dashboard</h1>
     <!-- START: ADD THIS ENTIRE NEW HTML SECTION -->
@@ -115,7 +114,6 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
     </div>
     <!-- END: ADD THIS ENTIRE NEW HTML SECTION -->
 
-    <h2>Recent Orders</h2>
     <table>
             <thead>
                 <tr>
@@ -153,7 +151,7 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
                         <td><?php echo date("g:i a, d M", strtotime($order['order_time'])); ?></td>
                         <td class="status-<?php echo strtolower($order['status']); ?>"><?php echo $order['status']; ?></td>
                         <td>
-                            <!-- Line 108: This form allows the admin to update the status of each order -->
+                            <!-- Line 154: This form allows the admin to update the status of each order -->
                             <form class="update-form" action="update_status.php" method="POST">
                                 <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
                                 <select name="new_status">
@@ -176,7 +174,38 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
 </div>
 
 <script>
-    // This function will run every 10 seconds to check for new orders.
+    // This variable will hold the timer for the banner.
+    let bannerTimeout;
+    
+    // Create a single, reusable audio object for the notification sound.
+    const notificationSound = new Audio('assets/notification.mp3');
+    
+    // This flag tracks if the user has "unlocked" the audio by clicking.
+    let audioUnlocked = false;
+
+    // This function runs only ONCE, the very first time the user clicks anywhere on the page.
+    function unlockAudio() {
+        if (!audioUnlocked) {
+            // We play a tiny, silent sound to get the browser's permission.
+            notificationSound.volume = 0;
+            notificationSound.play().then(() => {
+                // Success! The browser has given us permission.
+                notificationSound.pause();
+                notificationSound.currentTime = 0;
+                notificationSound.volume = 1.0; // Restore volume for actual notifications.
+                audioUnlocked = true;
+                // We remove this listener because we only need permission once.
+                document.removeEventListener('click', unlockAudio);
+            }).catch(error => {
+                // This might fail if the click is too fast, but it's okay.
+                // The main notification will still try to play the sound.
+            });
+        }
+    }
+    // We attach the unlock function to the entire document.
+    document.addEventListener('click', unlockAudio);
+
+
     function checkForNewOrders() {
         const tableBody = document.querySelector('tbody');
         if (!tableBody) return;
@@ -190,20 +219,27 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
         fetch(`admin_check_orders.php?last_id=${latestOrderId}`)
             .then(response => response.json())
             .then(data => {
-                if (data.new_order && data.html) {
+                if (data.new_order && data.html && data.message) {
                     // --- A NEW ORDER HAS ARRIVED! ---
                     
-                    // 1. Play the notification sound.
-                    const notificationSound = new Audio('assets/notification.mp3');
+                    // 1. Play the notification sound. This will now work reliably.
                     notificationSound.play();
                     
-                    // 2. Show the notification banner.
+                    // 2. Update and show the dynamic notification banner.
                     const banner = document.getElementById('newOrderBanner');
-                    if (banner) {
+                    const bannerMessage = document.getElementById('newOrderMessage');
+                    if (banner && bannerMessage) {
+                        bannerMessage.innerHTML = data.message;
                         banner.style.display = 'flex';
+
+                        // 3. Make the banner disappear automatically after 10 seconds.
+                        clearTimeout(bannerTimeout);
+                        bannerTimeout = setTimeout(() => {
+                            banner.style.display = 'none';
+                        }, 10000); // 10 seconds
                     }
                     
-                    // 3. Insert the new HTML rows at the top of the table.
+                    // 4. Insert the new HTML rows at the top of the table.
                     tableBody.insertAdjacentHTML('afterbegin', data.html);
                 }
             })
@@ -213,5 +249,6 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
     // This is the main timer. It calls the function every 10000 milliseconds (10 seconds).
     setInterval(checkForNewOrders, 10000);
 </script>
+
 </body>
 </html>
