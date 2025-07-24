@@ -136,7 +136,7 @@ if (isset($_SESSION['flash_message'])) {
                 echo '  <img src="' . htmlspecialchars($item['image_url']) . '" alt="' . htmlspecialchars($item['name']) . '">';
                 echo '  <h4>' . htmlspecialchars($item['name']) . '</h4>';
                 echo '  <p>Just ₹' . htmlspecialchars(number_format($item['price'], 2)) . '</p>';
-                echo '  <a href="order.php?item_id=' . $item['id'] . '" class="btn-card-order">Order Now</a>'; //BUTTON
+                echo '  <a href="menu.php?item_id=' . $item['id'] . '" class="btn-card-order">Order Now</a>'; //BUTTON
                 echo '</div>';
             }
         } else {

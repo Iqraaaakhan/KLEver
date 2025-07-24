@@ -214,3 +214,21 @@
     background-color: #f8f9fa; /* A lighter header for this internal table */
     color: #333;
 }
+/* --- REAL-TIME ORDER ROW ANIMATION --- */
+@keyframes fadeIn {
+    from {
+        background-color: #d4edda; /* A light green highlight */
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        background-color: #fff; /* Fade back to the normal white */
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply the animation to the new row class we added in the PHP */
+.new-order-row {
+    animation: fadeIn 1.5s ease-out;
+}
