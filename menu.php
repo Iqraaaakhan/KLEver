@@ -213,22 +213,30 @@ $menu_result = $conn->query($menu_query);
       let quantity = parseInt(document.getElementById(item.id).value);
       if (quantity > 0) {
         let cost = quantity * item.price;
-        summaryDiv.innerHTML += `<p>${item.name} x ${quantity} = ₹${cost}</p>`;
+        summaryDiv.innerHTML += `<p>${item.name} x ${quantity} = ₹${cost.toFixed(2)}</p>`;
         total += cost;
+        
+        // --- THIS IS THE CRITICAL UPGRADE ---
+        // We now find the original item to get its image URL and add it to the object we save.
+        const originalItem = <?php echo json_encode($menu_result->fetch_all(MYSQLI_ASSOC)); ?>.find(i => 'item_' + i.id === item.id);
+        
         orderItems.push({
           id: item.id,
           name: item.name,
           quantity: quantity,
           price: item.price,
-          cost: cost
+          cost: cost,
+          image: originalItem ? originalItem.image_url : '' // Add the image URL
         });
       }
     });
 
-    document.getElementById("total").innerText = `Total: ₹${total}`;
+    document.getElementById("total").innerText = `Total: ₹${total.toFixed(2)}`;
     localStorage.setItem("orderItems", JSON.stringify(orderItems));
     localStorage.setItem("orderTotal", total);
 
+    // This part for creating the "Go to Cart" button remains the same.
+    if (document.querySelector('#summary button')) return; // Prevent multiple buttons
     const cartButton = document.createElement("button");
     cartButton.innerHTML = '🛒 Go to Cart';
     cartButton.style.marginTop = "10px";
