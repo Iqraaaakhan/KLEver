@@ -59,6 +59,46 @@ $result = $stmt->get_result();
         .btn-track { font-size: 0.9rem; padding: 5px 12px; }
         .actions { display: flex; gap: 10px; }
         .btn-secondary { background-color: #6c757d; color: white; border: none; padding: 5px 12px; font-size: 0.9rem; border-radius: 5px; cursor: pointer; }
+
+        /* --- ADD THESE STYLES TO THE <style> BLOCK IN my_orders.php --- */
+        .order-row-clickable {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .order-row-clickable:hover {
+            background-color: #f8f9fa; /* A very light grey hover effect */
+        }
+        .expand-icon {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+        .order-items-row {
+            display: none; /* Hidden by default */
+        }
+        .order-items-row.show {
+            display: table-row; /* Make it visible */
+        }
+        .order-items-container {
+            padding: 1rem 2rem;
+            background-color: #fdfdfd;
+        }
+        .order-items-container ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .order-items-container li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .order-items-container li:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
@@ -73,11 +113,10 @@ $result = $stmt->get_result();
                     </thead>
                     <tbody>
                         <?php while($order = $result->fetch_assoc()): ?>
-                            <tr>
-                                <td><strong><?php echo htmlspecialchars($order['order_code']); ?></strong></td>
-                                <!-- THE FIX #1: Use 'order_time' instead of 'created_at' -->
+                            <!-- This new 'tr' is now clickable -->
+                            <tr class="order-row-clickable" data-order-id="<?php echo $order['id']; ?>">
+                                <td><strong><?php echo htmlspecialchars($order['order_code']); ?></strong> <i class="fas fa-chevron-down expand-icon"></i></td>
                                 <td><?php echo date('d M Y, h:i A', strtotime($order['order_time'])); ?></td>
-                                <!-- THE FIX #2: Use 'total' instead of 'total_price' -->
                                 <td>₹<?php echo number_format($order['total'], 2); ?></td>
                                 <td><span class="status-<?php echo strtolower($order['status']); ?>"><?php echo htmlspecialchars($order['status']); ?></span></td>
                                 <td class="actions">
@@ -85,6 +124,29 @@ $result = $stmt->get_result();
                                     <?php if ($order['status'] == 'Completed'): ?>
                                         <button class="btn-secondary btn-reorder" data-order-id="<?php echo $order['id']; ?>">Reorder</button>
                                     <?php endif; ?>
+                                </td>
+                            </tr>
+                            <!-- This is the new, hidden row that will contain the items -->
+                            <tr class="order-items-row" id="items-for-<?php echo $order['id']; ?>">
+                                <td colspan="5">
+                                    <div class="order-items-container">
+                                        <?php
+                                            // This is the new, efficient query to get items for THIS order
+                                            $items_stmt = $conn->prepare("SELECT item_name, quantity, price_per_item FROM order_items WHERE order_id = ?");
+                                            $items_stmt->bind_param("i", $order['id']);
+                                            $items_stmt->execute();
+                                            $items_result = $items_stmt->get_result();
+                                            echo '<ul>';
+                                            while ($item = $items_result->fetch_assoc()) {
+                                                echo '<li>';
+                                                echo '<span>' . htmlspecialchars($item['item_name']) . ' (x' . $item['quantity'] . ')</span>';
+                                                echo '<span>₹' . number_format($item['price_per_item'] * $item['quantity'], 2) . '</span>';
+                                                echo '</li>';
+                                            }
+                                            echo '</ul>';
+                                            $items_stmt->close();
+                                        ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -139,6 +201,27 @@ $result = $stmt->get_result();
                         this.textContent = 'Reorder';
                         this.disabled = false;
                     });
+            });
+        });
+
+        // This is the new script for the accordion functionality
+        const clickableRows = document.querySelectorAll('.order-row-clickable');
+        clickableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                // This prevents the click from triggering if the user clicks a button/link inside the row
+                if (e.target.closest('a, button')) {
+                    return;
+                }
+
+                const orderId = this.dataset.orderId;
+                const itemsRow = document.getElementById(`items-for-${orderId}`);
+                const icon = this.querySelector('.expand-icon');
+
+                if (itemsRow) {
+                    // Toggle the 'show' class to trigger the CSS transition
+                    itemsRow.classList.toggle('show');
+                    icon.classList.toggle('rotated');
+                }
             });
         });
     });

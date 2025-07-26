@@ -249,3 +249,131 @@
 .new-order-row-animation {
     animation: fadeInHighlight 3s ease-out;
 }
+/* --- KITCHEN DISPLAY SYSTEM (KDS) STYLES --- */
+.kds-container {
+    display: flex;
+    gap: 2rem;
+    height: calc(100vh - 150px); /* Full viewport height minus header/padding */
+    overflow-y: hidden;
+}
+
+.kds-column {
+    flex: 1;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kds-column-header {
+    padding: 1rem;
+    background-color: #322C2B; /* Your sidebar color */
+    color: #E4C59E; /* Your sidebar text color */
+    border-bottom: 3px solid #AF8260; /* Your theme accent */
+}
+
+.kds-column-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.kds-column-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.kds-order-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-left: 5px solid #d9822b; /* Orange for Pending */
+}
+
+#preparing-col .kds-order-card {
+    border-left-color: #007bff; /* Blue for Preparing */
+}
+
+.kds-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.75rem;
+}
+
+.kds-card-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #322C2B;
+}
+
+.kds-card-header span {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.kds-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.kds-item-list li {
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+    color: #333;
+}
+
+.kds-item-list li strong {
+    color: #000;
+    margin-right: 0.5rem;
+}
+
+.kds-card-footer {
+    text-align: right;
+}
+
+.btn-kds-action {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-kds-action:hover {
+    transform: scale(1.02);
+}
+
+.btn-kds-action.start-prep {
+    background-color: #ffc107; /* Yellow */
+    color: #212529;
+}
+
+.btn-kds-action.mark-ready {
+    background-color: #28a745; /* Green */
+}
+
+/* Responsive styles for tablets/smaller screens */
+@media (max-width: 992px) {
+    .kds-container {
+        flex-direction: column;
+        height: auto;
+    }
+    .kds-column {
+        min-height: 400px; /* Ensure columns have some height when stacked */
+    }
+}
