@@ -202,7 +202,7 @@ $total_users = $total_users_result->fetch_assoc()['user_count'] ?? 0;
             });
         }
     }
-    // We attach the unlock function to the entire document.
+    // We attach the unlock function to the entire document..
     document.addEventListener('click', unlockAudio);
 
 
